@@ -1,4 +1,4 @@
-package com.txl.libmoonlighttreasurebox;
+package com.txl.blockmoonlighttreasurebox;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

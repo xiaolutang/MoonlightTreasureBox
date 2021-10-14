@@ -1,4 +1,4 @@
-package com.txl.libmoonlighttreasurebox;
+package com.txl.blockmoonlighttreasurebox;
 
 import org.junit.Test;
 

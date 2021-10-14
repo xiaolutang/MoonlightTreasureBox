@@ -1,9 +1,9 @@
-package com.txl.libmoonlighttreasurebox.loghandle;
+package com.txl.blockmoonlighttreasurebox.loghandle;
 
 /**
  * 处理采集到的主线程运行信息
  * */
-public interface IHandleBoxInfo {
+public interface IBoxInfoHandle {
     /**
      * 处理正常消息
      * */
@@ -16,4 +16,9 @@ public interface IHandleBoxInfo {
      * 大于设定的阈值，极可能触发anr
      * */
     void handlerAnr(String msg);
+
+    /**
+     * 大于设置的丢帧数
+     * */
+    void handleJank(String msg);
 }
