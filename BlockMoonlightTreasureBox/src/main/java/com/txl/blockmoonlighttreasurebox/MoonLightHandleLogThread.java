@@ -12,9 +12,9 @@ import com.txl.blockmoonlighttreasurebox.loghandle.IBoxInfoHandle;
  * 该线程用于串行处理产生的日志信息
  * */
 public class MoonLightHandleLogThread extends HandlerThread {
+    private static final String TAG = MoonLightHandleLogThread.class.getSimpleName();
     private volatile Handler mHandler;
     private String logPerFix = "TTTTTTTTTTTTTTTTTTT";
-    private boolean start = false;
 
     private final IBoxInfoHandle defaultBoxIfo = new IBoxInfoHandle() {
         @Override
@@ -38,6 +38,43 @@ public class MoonLightHandleLogThread extends HandlerThread {
         }
     };
 
+    private class HandleMessageRunnable implements Runnable{
+        MessageInfo info;
+
+        public HandleMessageRunnable(MessageInfo info) {
+            this.info = info;
+        }
+
+        @Override
+        public void run() {
+            if(boxInfoHandle != null){
+                switch (info.msgType) {
+                    case MessageInfo.MSG_TYPE_ANR: {
+                        boxInfoHandle.handlerAnr( info.toString() );
+                        return;
+                    }
+                    case MessageInfo.MSG_TYPE_GAP: {
+                        boxInfoHandle.handlerNormal( info.toString() );
+                        return;
+                    }
+                    case MessageInfo.MSG_TYPE_JANK: {
+                        boxInfoHandle.handleJank( info.toString() );
+                        return;
+                    }
+                    case MessageInfo.MSG_TYPE_WARN: {
+                        boxInfoHandle.handlerWarn( info.toString() );
+                        return;
+                    }
+                    default: {
+                        boxInfoHandle.handlerNormal( info.toString() );
+                        return;
+                    }
+                }
+
+            }
+        }
+    }
+
     private IBoxInfoHandle boxInfoHandle = defaultBoxIfo;
 
     private MoonLightHandleLogThread(String name) {
@@ -55,52 +92,23 @@ public class MoonLightHandleLogThread extends HandlerThread {
     }
 
     @Override
-    public synchronized void start() {
-        if(!start){
-            super.start();
-            start = true;
-        }
+    public void run() {
+        super.run();
 
     }
 
     @Override
-    public void run() {
-        super.run();
+    protected void onLooperPrepared() {
+        super.onLooperPrepared();
+        Log.d( TAG,Thread.currentThread().getName()+" onLooperPrepared" );
         mHandler = new Handler(Looper.myLooper());
     }
-
-
 
     public void handleMessage(MessageInfo info){
         if (mHandler == null){
             mHandler = new Handler(Looper.getMainLooper());
         }
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-
-                if(boxInfoHandle != null){
-                    switch (info.msgType){
-                        case MessageInfo.MSG_TYPE_ANR:{
-                            boxInfoHandle.handlerAnr(info.toString());
-                        }
-                        case MessageInfo.MSG_TYPE_GAP:{
-                            boxInfoHandle.handlerNormal(info.toString());
-                        }
-                        case MessageInfo.MSG_TYPE_JANK:{
-                            boxInfoHandle.handleJank(info.toString());
-                        }
-                        case MessageInfo.MSG_TYPE_WARN:{
-                            boxInfoHandle.handlerWarn(info.toString());
-                        }
-                        default:{
-                            boxInfoHandle.handlerNormal(info.toString());
-                        }
-                    }
-
-                }
-            }
-        });
+        mHandler.post(new HandleMessageRunnable(info));
     }
 
     public static MoonLightHandleLogThread getInstance(){

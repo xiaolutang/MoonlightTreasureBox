@@ -5,6 +5,10 @@ package com.txl.blockmoonlighttreasurebox.info;
  * */
 public class BoxMessage {
     private String handleName;
+    /**
+     * 内存地址
+     * */
+    private String handlerAddress;
     private String callbackName;
     private int messageWhat;
 
@@ -20,21 +24,28 @@ public class BoxMessage {
         return messageWhat;
     }
 
+    public String getHandlerAddress() {
+        return handlerAddress;
+    }
+
     public BoxMessage() {
     }
 
-    public BoxMessage(String handleName, String callbackName, int messageWhat) {
+    public BoxMessage(String handleName, String callbackName, int messageWhat,String handlerAddress) {
         this.handleName = handleName;
         this.callbackName = callbackName;
         this.messageWhat = messageWhat;
+        this.handlerAddress = handlerAddress;
     }
 
     @Override
     public String toString() {
         return "BoxMessage{" +
                 "handleName='" + handleName + '\'' +
+                ", handlerAddress='" + handlerAddress + '\'' +
                 ", callbackName='" + callbackName + '\'' +
                 ", messageWhat=" + messageWhat +
-                '}';
+                '}'
+                +"\n";
     }
 }

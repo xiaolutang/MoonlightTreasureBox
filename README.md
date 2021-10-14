@@ -6,6 +6,7 @@
 是否可以检测卡顿？  Choreographer$FrameDisplayEventReceiver doFrame 回调执行完成就是View三大流程能否在16ms 内完成   检测掉帧  可以配置掉多少帧才发出警告
 app 上可视化ui
 这个时间计算规则需要重新来处理
+处理ActivityThread H handler 回调的系统消息
 
 
 

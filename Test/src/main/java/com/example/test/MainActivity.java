@@ -16,7 +16,13 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             TextView textView = findViewById(R.id.tv_text);
             textView.setText("我是：  "+num++);
-            textView.postDelayed(this,2500);
+//            textView.postDelayed(this,2500);
+
+            int i = 1;
+            while (i < 500_000_000){
+                i++;
+            }
+            textView.postDelayed(this,16);
         }
     };
 
@@ -25,13 +31,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.tv_text).postDelayed(runnable,2500);
+        int i = 1;
+        while (i < 500_000_000){
+            i++;
+        }
+//        findViewById(R.id.tv_text).postDelayed(runnable,2500);
         findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 testThreadTime();
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int i = 1;
+        while (i < 500_000_000){
+            i++;
+        }
     }
 
     Object object = new Object();

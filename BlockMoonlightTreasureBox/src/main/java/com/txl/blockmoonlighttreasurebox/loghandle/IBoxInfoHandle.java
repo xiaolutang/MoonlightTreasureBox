@@ -2,6 +2,7 @@ package com.txl.blockmoonlighttreasurebox.loghandle;
 
 /**
  * 处理采集到的主线程运行信息
+ * todo 增加ActivityThread的数据处理
  * */
 public interface IBoxInfoHandle {
     /**

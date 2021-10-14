@@ -30,11 +30,12 @@ public class MessageInfo {
      * */
     public int count = 1;
     /**
-     * 消息分发耗时  SystemClock.currentThreadTimeMillis()  是当前线程方法的执行时间，不包含线程休眠 或者锁竞争等待
+     * 消息分发耗时
      * */
     public long wallTime = 0;
     /**
-     * xiao
+     * SystemClock.currentThreadTimeMillis()  是当前线程方法的执行时间，不包含线程休眠 或者锁竞争等待
+     * cpu 时间是函数正真执行时间
      * */
     public long cpuTime = 0;
     public List<BoxMessage> boxMessages = new ArrayList<>();
