@@ -35,6 +35,10 @@ public class BoxMessageUtils {
      * 判断某条消息是不是在更新ui
      * */
     public static boolean isBoxMessageDoFrame(BoxMessage message){
-        return message != null && "android.view.Choreographer$FrameHandler".equals(message.getHandleName());
+        return message != null && "android.view.Choreographer$FrameHandler".equals(message.getHandleName()) && message.getCallbackName().contains("android.view.Choreographer$FrameDisplayEventReceiver");
+    }
+
+    public static boolean isBoxMessageActivityThread(BoxMessage message){
+        return message != null && "android.app.ActivityThread$H".equals(message.getHandleName());
     }
 }

@@ -3,6 +3,7 @@ package com.txl.blockmoonlighttreasurebox;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
@@ -14,29 +15,50 @@ import com.txl.blockmoonlighttreasurebox.loghandle.IBoxInfoHandle;
 public class MoonLightHandleLogThread extends HandlerThread {
     private static final String TAG = MoonLightHandleLogThread.class.getSimpleName();
     private volatile Handler mHandler;
-    private String logPerFix = "TTTTTTTTTTTTTTTTTTT";
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private BlockBoxConfig config;
 
     private final IBoxInfoHandle defaultBoxIfo = new IBoxInfoHandle() {
         @Override
         public void handlerNormal(String msg) {
-            Log.i(logPerFix,msg);
+            Log.i(TAG,msg);
         }
 
         @Override
         public void handlerWarn(String msg) {
-            Log.w(logPerFix,msg);
+            Log.w(TAG,msg);
         }
 
         @Override
         public void handlerAnr(String msg) {
-            Log.e(logPerFix,msg);
+            Log.e(TAG,msg);
         }
 
         @Override
         public void handleJank(String msg) {
-            Log.e(logPerFix,msg);
+            Log.e(TAG,msg);
         }
     };
+
+    Runnable checkThreadRunnable = new Runnable() {
+        long dealtTime = SystemClock.elapsedRealtime();
+        @Override
+        public void run() {
+            long offset = SystemClock.elapsedRealtime() - dealtTime;
+
+            dealtTime = SystemClock.elapsedRealtime();
+            startCheckTime();
+        }
+    };
+
+    public void updateConfig(BlockBoxConfig config) {
+        this.config = config;
+        if(config.getBoxInfoHandle() != null){
+            boxInfoHandle = config.getBoxInfoHandle();
+        }else {
+            boxInfoHandle = defaultBoxIfo;
+        }
+    }
 
     private class HandleMessageRunnable implements Runnable{
         MessageInfo info;
@@ -88,13 +110,20 @@ public class MoonLightHandleLogThread extends HandlerThread {
     }
 
     private void init(){
-
+//        startCheckTime();
     }
 
     @Override
-    public void run() {
-        super.run();
+    public synchronized void start() {
+        super.start();
+        startCheckTime();
+    }
 
+    private void startCheckTime() {
+        if(config == null){
+            throw new RuntimeException("before start please set config");
+        }
+        mainHandler.postDelayed(checkThreadRunnable, config.getWarnTime());
     }
 
     @Override
@@ -106,7 +135,7 @@ public class MoonLightHandleLogThread extends HandlerThread {
 
     public void handleMessage(MessageInfo info){
         if (mHandler == null){
-            mHandler = new Handler(Looper.getMainLooper());
+            mHandler = mainHandler;
         }
         mHandler.post(new HandleMessageRunnable(info));
     }
@@ -116,6 +145,6 @@ public class MoonLightHandleLogThread extends HandlerThread {
     }
 
     private static class MoonLightHandleLogThreadHolder{
-        private static MoonLightHandleLogThread moonLightHandleLogThread = new MoonLightHandleLogThread("MoonLightThread");
+        private static final MoonLightHandleLogThread moonLightHandleLogThread = new MoonLightHandleLogThread("MoonLightThread");
     }
 }

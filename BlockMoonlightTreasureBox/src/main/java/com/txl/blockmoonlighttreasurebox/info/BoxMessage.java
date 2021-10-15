@@ -1,9 +1,13 @@
 package com.txl.blockmoonlighttreasurebox.info;
 
+import java.io.Serializable;
+
 /**
  * 分发的Message  相关信息
  * */
-public class BoxMessage {
+public class BoxMessage implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String handleName;
     /**
      * 内存地址

@@ -1,5 +1,7 @@
 package com.txl.blockmoonlighttreasurebox.info;
 
+import android.os.SystemClock;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -19,8 +21,12 @@ public class MessageInfo {
      * 连续两个消息之间的间隙
      * */
     public static final int MSG_TYPE_GAP = 0x10;
+    /**
+     * 通过ActivityThread$H handle 发送的消息
+     * */
+    public static final int MSG_TYPE_ACTIVITY_THREAD_H = 0x20;
 
-    @IntDef({MSG_TYPE_NONE,MSG_TYPE_INFO,MSG_TYPE_WARN,MSG_TYPE_ANR,MSG_TYPE_JANK,MSG_TYPE_GAP})
+    @IntDef({MSG_TYPE_NONE,MSG_TYPE_INFO,MSG_TYPE_WARN,MSG_TYPE_ANR,MSG_TYPE_JANK,MSG_TYPE_GAP,MSG_TYPE_ACTIVITY_THREAD_H})
     private @interface MsgType{}
 
     public @MsgType int msgType = MSG_TYPE_INFO;
@@ -40,6 +46,10 @@ public class MessageInfo {
     public long cpuTime = 0;
     public List<BoxMessage> boxMessages = new ArrayList<>();
 
+    /**
+     * 消息被创建的时间
+     * */
+    public long messageCreateTime = SystemClock.elapsedRealtime();
 
     @Override
     public String toString() {
@@ -66,6 +76,8 @@ public class MessageInfo {
                 return "MSG_TYPE_JANK";
             case MSG_TYPE_GAP:
                 return "MSG_TYPE_GAP";
+            case MSG_TYPE_ACTIVITY_THREAD_H:
+                return "MSG_TYPE_ACTIVITY_THREAD_H";
         }
         return "";
     }

@@ -13,4 +13,15 @@ public class ReflectUtils {
         }
         return defaultValue;
     }
+
+    public static Object reflectFiled(Object o,Class c,String fieldName){
+        try {
+            Field file = c.getDeclaredField(fieldName);
+            file.setAccessible(true);
+            return file.get(o);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

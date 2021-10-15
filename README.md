@@ -7,6 +7,7 @@
 app 上可视化ui
 这个时间计算规则需要重新来处理
 处理ActivityThread H handler 回调的系统消息
+梳理各个测试场景  模拟测试
 
 
 

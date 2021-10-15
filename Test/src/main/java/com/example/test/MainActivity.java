@@ -31,10 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        int i = 1;
-        while (i < 500_000_000){
-            i++;
-        }
+        consumeCpu();
 //        findViewById(R.id.tv_text).postDelayed(runnable,2500);
         findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,13 +42,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void consumeCpu(){
+        int i = 1;
+        while (i<50){
+            int j = 1;
+            while (j < 500_000_000){
+                j++;
+            }
+            i++;
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        int i = 1;
-        while (i < 500_000_000){
-            i++;
-        }
+        consumeCpu();
     }
 
     Object object = new Object();
