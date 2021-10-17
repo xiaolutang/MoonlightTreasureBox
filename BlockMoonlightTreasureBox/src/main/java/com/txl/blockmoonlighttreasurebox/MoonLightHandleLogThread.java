@@ -7,7 +7,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
-import com.txl.blockmoonlighttreasurebox.loghandle.IBoxInfoHandle;
+import com.txl.blockmoonlighttreasurebox.handle.IBoxInfoHandle;
 
 /**
  * 该线程用于串行处理产生的日志信息
@@ -20,23 +20,21 @@ public class MoonLightHandleLogThread extends HandlerThread {
 
     private final IBoxInfoHandle defaultBoxIfo = new IBoxInfoHandle() {
         @Override
-        public void handlerNormal(String msg) {
+        public boolean handleNormal(String msg) {
             Log.i(TAG,msg);
+            return false;
         }
 
         @Override
-        public void handlerWarn(String msg) {
-            Log.w(TAG,msg);
-        }
-
-        @Override
-        public void handlerAnr(String msg) {
+        public boolean handleJank(String msg) {
             Log.e(TAG,msg);
+            return false;
         }
 
         @Override
-        public void handleJank(String msg) {
+        public boolean handleCheckThread(String msg) {
             Log.e(TAG,msg);
+            return false;
         }
     };
 
@@ -44,6 +42,7 @@ public class MoonLightHandleLogThread extends HandlerThread {
         long dealtTime = SystemClock.elapsedRealtime();
         @Override
         public void run() {
+            //时间偏差 差值越大说明调度能力越差
             long offset = SystemClock.elapsedRealtime() - dealtTime;
 
             dealtTime = SystemClock.elapsedRealtime();
@@ -71,24 +70,12 @@ public class MoonLightHandleLogThread extends HandlerThread {
         public void run() {
             if(boxInfoHandle != null){
                 switch (info.msgType) {
-                    case MessageInfo.MSG_TYPE_ANR: {
-                        boxInfoHandle.handlerAnr( info.toString() );
-                        return;
-                    }
-                    case MessageInfo.MSG_TYPE_GAP: {
-                        boxInfoHandle.handlerNormal( info.toString() );
-                        return;
-                    }
                     case MessageInfo.MSG_TYPE_JANK: {
                         boxInfoHandle.handleJank( info.toString() );
                         return;
                     }
-                    case MessageInfo.MSG_TYPE_WARN: {
-                        boxInfoHandle.handlerWarn( info.toString() );
-                        return;
-                    }
                     default: {
-                        boxInfoHandle.handlerNormal( info.toString() );
+                        boxInfoHandle.handleNormal( info.toString() );
                         return;
                     }
                 }

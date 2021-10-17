@@ -1,6 +1,6 @@
 package com.txl.blockmoonlighttreasurebox;
 
-import com.txl.blockmoonlighttreasurebox.loghandle.IBoxInfoHandle;
+import com.txl.blockmoonlighttreasurebox.handle.IBoxInfoHandle;
 
 public class BlockBoxConfig {
     /**

@@ -98,7 +98,6 @@ public class LooperMonitor implements Printer {
             cupStartTime = SystemClock.currentThreadTimeMillis();
             cpuTempStartTime = cupStartTime;
         }
-        //todo 开启anr监控  时间对齐方案
     }
 
     private void msgEnd(String msg) {
@@ -173,7 +172,6 @@ public class LooperMonitor implements Printer {
         static LooperMonitor looperMonitor = new LooperMonitor();
     }
 
-    //todo 时间对齐方案  研究
     private class AnrMonitorThread extends Thread{
         private long msgId = noInit;
         private long anrTime;
@@ -211,9 +209,6 @@ public class LooperMonitor implements Printer {
                 if(sleepTime > 0){
                     SystemClock.sleep(sleepTime);
                 }
-
-
-
             }
         }
     }
