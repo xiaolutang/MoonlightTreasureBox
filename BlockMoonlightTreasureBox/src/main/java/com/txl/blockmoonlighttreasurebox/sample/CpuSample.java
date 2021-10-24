@@ -2,6 +2,8 @@ package com.txl.blockmoonlighttreasurebox.sample;
 
 import android.util.Log;
 
+import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import java.util.Map;
  * description：
  */
 public class CpuSample extends AbsSampler{
-    private static final String TAG = "CpuSampler";
     private static final int BUFFER_SIZE = 1024;
 
     private int mPid = 0;
@@ -36,13 +37,8 @@ public class CpuSample extends AbsSampler{
     }
 
     @Override
-    protected void doSample() {
-        if(!mShouldSample.get()){
-            Log.d( TAG,"Abandon this sampling, it is already sampling" );
-           return;
-        }
+    protected void doSample(String msgId, boolean needListener) {
         reset();
-        mShouldSample.set( false );
         BufferedReader cpuReader = null;
         BufferedReader pidReader = null;
 
@@ -64,7 +60,16 @@ public class CpuSample extends AbsSampler{
                 pidCpuRate = "";
             }
 
-            parse(cpuRate, pidCpuRate);
+            String result = parse(cpuRate, pidCpuRate);
+            if(needListener && mSampleListener != null){
+                AppExecutors.getInstance().diskIO().execute( new Runnable() {
+                    @Override
+                    public void run() {
+                        mSampleListener.onSampleEnd(msgId, result );
+                    }
+                } );
+
+            }
         } catch (Throwable throwable) {
             Log.e(TAG, "doSample: ", throwable);
         } finally {
@@ -81,10 +86,10 @@ public class CpuSample extends AbsSampler{
         }
     }
 
-    private void parse(String cpuRate, String pidCpuRate) {
+    private String parse(String cpuRate, String pidCpuRate) {
         String[] cpuInfoArray = cpuRate.split(" ");
         if (cpuInfoArray.length < 9) {
-            return;
+            return "";
         }
 
         long user = Long.parseLong(cpuInfoArray[2]);
@@ -98,16 +103,16 @@ public class CpuSample extends AbsSampler{
 
         String[] pidCpuInfoList = pidCpuRate.split(" ");
         if (pidCpuInfoList.length < 17) {
-            return;
+            return "";
         }
 
         long appCpuTime = Long.parseLong(pidCpuInfoList[13])
                 + Long.parseLong(pidCpuInfoList[14])
                 + Long.parseLong(pidCpuInfoList[15])
                 + Long.parseLong(pidCpuInfoList[16]);
-
+        StringBuilder stringBuilder = new StringBuilder();
         if (mTotalLast != 0) {
-            StringBuilder stringBuilder = new StringBuilder();
+
             long idleTime = idle - mIdleLast;
             long totalTime = total - mTotalLast;
 
@@ -133,6 +138,6 @@ public class CpuSample extends AbsSampler{
         mTotalLast = total;
 
         mAppCpuTimeLast = appCpuTime;
-        mShouldSample.set( true );
+        return new String(stringBuilder);
     }
 }

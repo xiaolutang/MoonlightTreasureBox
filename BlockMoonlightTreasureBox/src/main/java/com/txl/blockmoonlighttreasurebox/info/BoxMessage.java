@@ -6,6 +6,7 @@ import java.io.Serializable;
  * 分发的Message  相关信息
  * */
 public class BoxMessage implements Serializable {
+    public static final String SEPARATOR = "\r\n";
     private static final long serialVersionUID = 1L;
 
     private String handleName;
@@ -15,6 +16,7 @@ public class BoxMessage implements Serializable {
     private String handlerAddress;
     private String callbackName;
     private int messageWhat;
+    private long msgId;
 
     public String getHandleName() {
         return handleName;
@@ -30,6 +32,14 @@ public class BoxMessage implements Serializable {
 
     public String getHandlerAddress() {
         return handlerAddress;
+    }
+
+    public long getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(long msgId) {
+        this.msgId = msgId;
     }
 
     public BoxMessage() {
@@ -49,7 +59,7 @@ public class BoxMessage implements Serializable {
                 ", handlerAddress='" + handlerAddress + '\'' +
                 ", callbackName='" + callbackName + '\'' +
                 ", messageWhat=" + messageWhat +
-                '}'
-                +"\n";
+                ", msgId=" + msgId +
+                '}';
     }
 }

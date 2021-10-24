@@ -1,6 +1,6 @@
 package com.txl.blockmoonlighttreasurebox.sample;
 
-import android.os.HandlerThread;
+import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * description：采样
  */
 public abstract class AbsSampler {
-    //采样后的结果处理，放在其它位置
-    protected HandlerThread fileThread = new HandlerThread( "" );
+    protected final String TAG = getClass().getSimpleName();
+    protected SampleListener mSampleListener;
     /**
      * 是否可以进行采样
      * */
@@ -21,5 +21,23 @@ public abstract class AbsSampler {
     /**
      * 进行采样
      * */
-    protected abstract void doSample();
+    protected abstract void doSample(String msgId, boolean needListener);
+
+    public void setSampleListener(SampleListener mSampleListener) {
+        this.mSampleListener = mSampleListener;
+    }
+
+    public void startSample(String msgId, boolean needListener){
+        if(!mShouldSample.get()){
+            Log.d( TAG,"Abandon this sampling, it is already sampling" );
+            return;
+        }
+        mShouldSample.set( false );
+        doSample(msgId,needListener);
+        mShouldSample.set( true );
+    }
+
+    public interface SampleListener{
+        void onSampleEnd(String msgId,String msg);
+    }
 }

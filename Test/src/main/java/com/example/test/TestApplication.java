@@ -4,15 +4,13 @@ import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.github.moduth.blockcanary.BlockCanary;
-import com.github.moduth.blockcanary.BlockCanaryContext;
-import com.txl.blockmoonlighttreasurebox.LooperMonitor;
+import com.txl.blockmoonlighttreasurebox.BlockMonitor;
 
 public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LooperMonitor.getInstance().startMonitor();
+        BlockMonitor.getInstance().startMonitor();
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {

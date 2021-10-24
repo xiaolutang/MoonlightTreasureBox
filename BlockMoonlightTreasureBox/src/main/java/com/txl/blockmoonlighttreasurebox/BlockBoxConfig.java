@@ -1,6 +1,11 @@
 package com.txl.blockmoonlighttreasurebox;
 
-import com.txl.blockmoonlighttreasurebox.handle.IBoxInfoHandle;
+import com.txl.blockmoonlighttreasurebox.handle.FileSample;
+import com.txl.blockmoonlighttreasurebox.handle.LogSample;
+import com.txl.blockmoonlighttreasurebox.sample.ISamplerManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockBoxConfig {
     /**
@@ -18,8 +23,18 @@ public class BlockBoxConfig {
      */
     private int jankFrame = 30;
 
-    private IBoxInfoHandle boxInfoHandle;
+    private List<ISamplerManager.ISampleListener> sampleListeners = new ArrayList<>();
 
+    private List<ISamplerManager.IAnrSamplerListener> anrSamplerListeners = new ArrayList<>();
+
+
+    public List<ISamplerManager.ISampleListener> getSampleListeners() {
+        return sampleListeners;
+    }
+
+    public List<ISamplerManager.IAnrSamplerListener> getAnrSamplerListeners() {
+        return anrSamplerListeners;
+    }
 
     public long getWarnTime() {
         return warnTime;
@@ -40,16 +55,18 @@ public class BlockBoxConfig {
     private BlockBoxConfig() {
     }
 
-    public IBoxInfoHandle getBoxInfoHandle() {
-        return boxInfoHandle;
-    }
-
 
 
     public static class Builder{
         private final BlockBoxConfig config;
         public Builder(){
             config = new BlockBoxConfig();
+            LogSample logSample = new LogSample();
+            config.anrSamplerListeners.add( logSample );
+            config.sampleListeners.add( logSample );
+            FileSample fileSample = new FileSample();
+            config.anrSamplerListeners.add( fileSample );
+            config.sampleListeners.add( fileSample );
         }
 
         public Builder setWarnTime(long warnTime) {
@@ -72,13 +89,32 @@ public class BlockBoxConfig {
             return this;
         }
 
-        public Builder setBoxInfoHandle(IBoxInfoHandle boxInfoHandle) {
-            config.boxInfoHandle = boxInfoHandle;
+        public Builder addSampleListener(ISamplerManager.ISampleListener sampleListener) {
+            config.sampleListeners.add( sampleListener );
+            return this;
+        }
+
+        public Builder addFirstSampleListener(ISamplerManager.ISampleListener sampleListener) {
+            config.sampleListeners.add( sampleListener );
+            return this;
+        }
+
+        public Builder addAnrSampleListener(ISamplerManager.IAnrSamplerListener anrSamplerListener) {
+            config.anrSamplerListeners.add( anrSamplerListener );
+            return this;
+        }
+
+        public Builder addFirstAnrSampleListener(ISamplerManager.IAnrSamplerListener anrSamplerListener) {
+            config.anrSamplerListeners.add( anrSamplerListener );
             return this;
         }
 
         public BlockBoxConfig build(){
             return config;
         }
+    }
+
+    public interface IConfigChangeListener{
+        void onConfigChange(BlockBoxConfig config);
     }
 }

@@ -1,5 +1,6 @@
 package com.txl.blockmoonlighttreasurebox;
 
+import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
@@ -8,16 +9,20 @@ import android.view.Choreographer;
 
 import com.txl.blockmoonlighttreasurebox.info.BoxMessage;
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
+import com.txl.blockmoonlighttreasurebox.sample.ISamplerManager;
+import com.txl.blockmoonlighttreasurebox.sample.SamplerFactory;
+import com.txl.blockmoonlighttreasurebox.sample.SamplerListenerChain;
 import com.txl.blockmoonlighttreasurebox.utils.BoxMessageUtils;
 import com.txl.blockmoonlighttreasurebox.utils.ReflectUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * 监控每个消息分发处理的时间
+ * 监控卡顿消息
  */
-public class LooperMonitor implements Printer {
-    private final String TAG = LooperMonitor.class.getSimpleName();
+public class BlockMonitor implements Printer {
+    private final String TAG = BlockMonitor.class.getSimpleName();
+    private boolean start = false;
 
     /**
      * 每一帧的时间
@@ -37,22 +42,52 @@ public class LooperMonitor implements Printer {
      */
     private MessageInfo messageInfo;
     private BoxMessage currentMsg;
+    private AnrMonitorThread anrMonitorThread;
 
-    MoonLightHandleLogThread moonLightHandleLogThread;
-    AnrMonitorThread anrMonitorThread;
+    private BlockBoxConfig config;
 
-    private BlockBoxConfig config = new BlockBoxConfig.Builder().build();
+    /**
+     * 采集anr时的相关信息
+     * */
+    private ISamplerManager samplerManager;
+    /**
+     * 正常采集
+     * */
+    private SamplerListenerChain sampleListener = new SamplerListenerChain();
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    Runnable checkThreadRunnable = new Runnable() {
+        long dealtTime = SystemClock.elapsedRealtime();
+        @Override
+        public void run() {
+            //时间偏差 差值越大说明调度能力越差
+            long offset = SystemClock.elapsedRealtime() - dealtTime;
+            sampleListener.onScheduledSample( dealtTime,"",offset );
+            dealtTime = SystemClock.elapsedRealtime();
+            startCheckTime();
+        }
+    };
+
+    /**
+     * 监控主线程调度能力
+     * */
+    private void startCheckTime() {
+        if(config == null){
+            throw new RuntimeException("before start please set config");
+        }
+        if(start)
+        mainHandler.postDelayed(checkThreadRunnable, config.getWarnTime());
+    }
 
     public void updateConfig(BlockBoxConfig config) {
         this.config = config;
-        if(moonLightHandleLogThread != null){
-            moonLightHandleLogThread.updateConfig(config);
-        }
+        samplerManager.onConfigChange( config );
+        sampleListener.onConfigChange( config );
     }
 
-    private LooperMonitor() {
-        anrMonitorThread = new AnrMonitorThread("anrMonitorThread");
-        anrMonitorThread.start();
+    private BlockMonitor() {
+        samplerManager = SamplerFactory.createSampleManager();
+        updateConfig( new BlockBoxConfig.Builder().build() );
     }
 
     //调用println 是奇数次还是偶数  默认false 偶数  true 奇数
@@ -74,11 +109,11 @@ public class LooperMonitor implements Printer {
     }
 
     private void msgStart(String msg) {
-        currentMsg = BoxMessageUtils.parseLooperStart( msg );
         tempStartTime = SystemClock.elapsedRealtime();
         monitorAnrTime = tempStartTime + config.getAnrTime();
         monitorMsgId++;
-
+        currentMsg = BoxMessageUtils.parseLooperStart( msg );
+        currentMsg.setMsgId( monitorMsgId );
         cpuTempStartTime = SystemClock.currentThreadTimeMillis();
         //两次消息时间差较大，单独处理消息且增加一个gap消息
         if (tempStartTime - lastEnd > config.getGapTime() && lastEnd != noInit) {
@@ -137,6 +172,7 @@ public class LooperMonitor implements Printer {
     }
 
     private void handleJank(long dealt) {
+
         if (BoxMessageUtils.isBoxMessageDoFrame( currentMsg ) && dealt > mFrameIntervalNanos * config.getJankFrame()) {
             MessageInfo temp = messageInfo;
             messageInfo = new MessageInfo();
@@ -144,34 +180,53 @@ public class LooperMonitor implements Printer {
             messageInfo.boxMessages.add( currentMsg );
             messageInfo.wallTime = lastEnd - tempStartTime;
             messageInfo.cpuTime = lastCpuEnd - cpuTempStartTime;
-            handleMsg();
+            sampleListener.onJankSample( monitorMsgId+"",messageInfo );
+//            handleMsg();
             messageInfo = temp;
         }
     }
 
-    public void startMonitor() {
-        moonLightHandleLogThread = MoonLightHandleLogThread.getInstance();
-        moonLightHandleLogThread.updateConfig(config);
-        moonLightHandleLogThread.start();
+    public synchronized void startMonitor() {
+        if(start){
+            Log.e( TAG,"already start" );
+            return;
+        }
+        start = true;
+        anrMonitorThread = new AnrMonitorThread("anrMonitorThread");
+        anrMonitorThread.start();
         Looper.getMainLooper().setMessageLogging( this );
+        startCheckTime();
+    }
+
+    /**
+     * 停止监控
+     * */
+    public synchronized void stopMonitor(){
+        Looper.getMainLooper().setMessageLogging( null );
+        mainHandler.removeCallbacksAndMessages( null );
+        anrMonitorThread = null;
+        start = false;
     }
 
     private void handleMsg() {
         if (messageInfo != null) {
-            moonLightHandleLogThread.handleMessage( messageInfo );
+            sampleListener.onMsgSample( startTime,monitorMsgId+"",messageInfo );
         }
         messageInfo = null;
     }
 
-    public static LooperMonitor getInstance() {
-        return LooperMonitorHolder.looperMonitor;
+    public static BlockMonitor getInstance() {
+        return BlockMonitorHolder.blockMonitor;
     }
 
 
-    private static class LooperMonitorHolder {
-        static LooperMonitor looperMonitor = new LooperMonitor();
+    private static class BlockMonitorHolder {
+        static BlockMonitor blockMonitor = new BlockMonitor();
     }
 
+    /**
+     * 监控anr
+     * */
     private class AnrMonitorThread extends Thread{
         private long msgId = noInit;
         private long anrTime;
@@ -183,7 +238,7 @@ public class LooperMonitor implements Printer {
         @Override
         public void run() {
             super.run();
-            while (true){
+            while (start){
                 //以消息开始时间加上超时时长为目标超时时间，每次超时时间到了之后，检查当前时间是否大于或等于目标时间，
                 // 如果满足，则说明目标时间没有更新，也就是说本次消息没结束，则抓取堆栈。如果每次超时之后，
                 // 检查当前时间小于目标时间，则说明上次消息执行结束，新的消息开始执行并更新了目标超时时间，
@@ -194,11 +249,14 @@ public class LooperMonitor implements Printer {
                         anrTime = now + config.getAnrTime();//重置anr 发生时间
                         //发生anr
                         Object mLogging = ReflectUtils.reflectFiled(Looper.getMainLooper(),Looper.class,"mLogging");
-                        if(mLogging != LooperMonitor.this){
-                            Log.e(TAG,"MainLooper printer set by other : "+mLogging);
+                        if(mLogging != BlockMonitor.this){
+                            startMonitor();
+                            Log.e(TAG,"startMonitor MainLooper printer set by other : "+mLogging);
                             return;
                         }
                         Log.e(TAG,"occur anr start dump stack and other info ");
+                        if(start)
+                        samplerManager.startAnrSample(msgId+"",SystemClock.elapsedRealtime());
                     }else {
                         //消息已经被处理了  重置anr时间
                         msgId = monitorMsgId;
