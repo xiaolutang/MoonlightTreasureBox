@@ -59,8 +59,14 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-        consumeCpu();
+
 //        findViewById(R.id.tv_text).postDelayed(runnable,2500);
+        findViewById(R.id.tv_text).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                consumeCpu();
+            }
+        },5000);
         findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

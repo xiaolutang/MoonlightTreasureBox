@@ -5,4 +5,24 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application>
+        <activity
+            android:name=".ui.AnalyzeActivity"
+            android:exported="true"
+            android:label="@string/log_analyze"/>
+        <activity
+            android:name=".ui.DisplayActivity"
+            android:enabled="true"
+            android:icon="@drawable/icon_block"
+            android:label="@string/block_moon_light_treasure_box"
+            android:taskAffinity="com.txl.blockmoonlighttreasurebox">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
 </manifest>

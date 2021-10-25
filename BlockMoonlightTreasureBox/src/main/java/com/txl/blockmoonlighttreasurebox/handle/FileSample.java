@@ -78,7 +78,9 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
-                    fileCache.cacheData(temp);
+                    String path = FileCache.sFormat.format(new Date());
+                    temp.fileName = path;
+                    fileCache.cacheData(path,temp);
                     //通知可以展示ui
                 }
             });
@@ -121,7 +123,7 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
          * */
         private int maxSize = 20;
         private int currentSize;
-        private static final SimpleDateFormat sFormat = new SimpleDateFormat("MM-dd HH:mm:ss:SSS");
+        private static final SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 
         private FileCache() {
         }
@@ -160,8 +162,7 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
             return diskCacheDir;
         }
 
-        public synchronized void cacheData(T serializable){
-            String path = sFormat.format(new Date());
+        public synchronized void cacheData(String path, T serializable){
 //如果文件不存在就创建文件
             File file=new File(diskCacheDir.getPath()+ File.separator+path);
             //file.createNewFile();
@@ -187,11 +188,11 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
             Arrays.sort(files, new Comparator<File>() {
                 @Override
                 public int compare(File o1, File o2) {
-
                     return o1.getName().compareTo(o2.getName()) ;
                 }
             });
             //把最小的移除掉
+            Log.d(TAG,"removeLastFile file name: "+files[0].getName());
             FileUtils.deleteFile(files[0]);
         }
 
