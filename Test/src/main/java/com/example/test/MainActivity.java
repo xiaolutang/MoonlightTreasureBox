@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        consumeCpu();
+//        consumeCpu();
     }
 
     Object object = new Object();
