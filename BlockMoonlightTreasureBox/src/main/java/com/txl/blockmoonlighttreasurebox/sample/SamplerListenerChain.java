@@ -1,7 +1,6 @@
 package com.txl.blockmoonlighttreasurebox.sample;
 
-import com.txl.blockmoonlighttreasurebox.BlockBoxConfig;
-import com.txl.blockmoonlighttreasurebox.info.BoxMessage;
+import com.txl.blockmoonlighttreasurebox.block.BlockBoxConfig;
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
 
 import java.util.ArrayList;

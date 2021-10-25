@@ -5,10 +5,13 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageInfo {
+public class MessageInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final int MSG_TYPE_NONE = 0x00;
     public static final int MSG_TYPE_INFO = 0x01;
     public static final int MSG_TYPE_WARN = 0x02;

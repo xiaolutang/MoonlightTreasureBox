@@ -3,7 +3,8 @@ package com.txl.blockmoonlighttreasurebox.sample;
 import android.os.Looper;
 import android.util.Printer;
 
-import com.txl.blockmoonlighttreasurebox.BlockBoxConfig;
+import com.txl.blockmoonlighttreasurebox.block.BlockBoxConfig;
+import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,13 @@ public class SampleManagerImpl implements ISamplerManager{
         cpuSample.setSampleListener( new AbsSampler.SampleListener() {
             @Override
             public void onSampleEnd(String msgId, String msg) {
-                samplerListenerChain.onCpuSample( baseTime,msgId,msg );
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        samplerListenerChain.onCpuSample( baseTime,msgId,msg );
+                    }
+                });
+
             }
         } );
         anrSample.add( cpuSample );
@@ -32,7 +39,12 @@ public class SampleManagerImpl implements ISamplerManager{
         stackSample.setSampleListener( new AbsSampler.SampleListener() {
             @Override
             public void onSampleEnd(String msgId, String msg) {
-                samplerListenerChain.onMainThreadStackSample( baseTime,msgId,msg );
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        samplerListenerChain.onMainThreadStackSample( baseTime,msgId,msg );
+                    }
+                });
             }
         } );
         anrSample.add( stackSample );
@@ -40,15 +52,28 @@ public class SampleManagerImpl implements ISamplerManager{
 
     @Override
     public void startAnrSample(String msgId, long baseTime) {
-        this.baseTime = baseTime;
-        this.msgId = msgId;
-        for (AbsSampler sampler : anrSample){
-            sampler.startSample( msgId,true );
-        }
-        //获取当前消息队列的情况
-        Looper.getMainLooper().dump( new MessageQueuePrint() ,"" );
-        samplerListenerChain.onAllAnrMessageSampleEnd();
-        //todo 采集内存信息
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SampleManagerImpl.this.baseTime = baseTime;
+                SampleManagerImpl.this.msgId = msgId;
+                for (AbsSampler sampler : anrSample){
+                    sampler.startSample( msgId,true );
+                }
+                //获取当前消息队列的情况
+                Looper.getMainLooper().dump( new MessageQueuePrint() ,"" );
+
+                //todo 采集内存信息
+            }
+        });
+        //为了能在所有消息处理之后回调
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                samplerListenerChain.onAllAnrMessageSampleEnd();
+            }
+        });
+
     }
 
     public static SampleManagerImpl getInstance(){

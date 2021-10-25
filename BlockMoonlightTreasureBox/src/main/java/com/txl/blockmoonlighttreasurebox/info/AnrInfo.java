@@ -1,0 +1,17 @@
+package com.txl.blockmoonlighttreasurebox.info;
+
+import com.txl.blockmoonlighttreasurebox.cache.TimeLruCache;
+
+import java.io.Serializable;
+
+/**
+ * 存储所有Anr发生时产生的信息
+ * */
+public class AnrInfo implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public TimeLruCache<MessageInfo> messageSamplerCache = new TimeLruCache<>();
+    public TimeLruCache<ScheduledInfo> scheduledSamplerCache = new TimeLruCache<>();
+    public StringBuilder messageQueueSample = new StringBuilder();
+    public String mainThreadStack;
+}

@@ -1,5 +1,6 @@
-package com.txl.blockmoonlighttreasurebox;
+package com.txl.blockmoonlighttreasurebox.block;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -20,9 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 监控卡顿消息
  */
-public class BlockMonitor implements Printer {
+public class BlockMonitor implements Printer,IBlock {
     private final String TAG = BlockMonitor.class.getSimpleName();
     private boolean start = false;
+    private Context applicationContext;
 
     /**
      * 每一帧的时间
@@ -79,10 +81,15 @@ public class BlockMonitor implements Printer {
         mainHandler.postDelayed(checkThreadRunnable, config.getWarnTime());
     }
 
-    public void updateConfig(BlockBoxConfig config) {
+    public void setApplicationContext(Context applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    public IBlock updateConfig(BlockBoxConfig config) {
         this.config = config;
         samplerManager.onConfigChange( config );
         sampleListener.onConfigChange( config );
+        return this;
     }
 
     private BlockMonitor() {
@@ -186,26 +193,33 @@ public class BlockMonitor implements Printer {
         }
     }
 
-    public synchronized void startMonitor() {
+    @Override
+    public Context getApplicationContext() {
+        return applicationContext;
+    }
+
+    public synchronized IBlock startMonitor() {
         if(start){
             Log.e( TAG,"already start" );
-            return;
+            return null;
         }
         start = true;
         anrMonitorThread = new AnrMonitorThread("anrMonitorThread");
         anrMonitorThread.start();
         Looper.getMainLooper().setMessageLogging( this );
         startCheckTime();
+        return this;
     }
 
     /**
      * 停止监控
      * */
-    public synchronized void stopMonitor(){
+    public synchronized IBlock stopMonitor(){
         Looper.getMainLooper().setMessageLogging( null );
         mainHandler.removeCallbacksAndMessages( null );
         anrMonitorThread = null;
         start = false;
+        return this;
     }
 
     private void handleMsg() {
@@ -215,7 +229,7 @@ public class BlockMonitor implements Printer {
         messageInfo = null;
     }
 
-    public static BlockMonitor getInstance() {
+    protected static BlockMonitor getInstance() {
         return BlockMonitorHolder.blockMonitor;
     }
 

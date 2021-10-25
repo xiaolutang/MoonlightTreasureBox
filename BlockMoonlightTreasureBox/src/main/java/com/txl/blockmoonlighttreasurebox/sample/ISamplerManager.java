@@ -1,7 +1,6 @@
 package com.txl.blockmoonlighttreasurebox.sample;
 
-import com.txl.blockmoonlighttreasurebox.BlockBoxConfig;
-import com.txl.blockmoonlighttreasurebox.info.BoxMessage;
+import com.txl.blockmoonlighttreasurebox.block.BlockBoxConfig;
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
 
 /**
@@ -33,6 +32,9 @@ public interface ISamplerManager extends BlockBoxConfig.IConfigChangeListener{
         boolean onAllAnrMessageSampleEnd();
     }
 
+    /**
+     * 这些方法调用都在主线程
+     * */
     interface ISampleListener{
         /**
          * 当前主线程的调度能力

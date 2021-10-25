@@ -5,8 +5,15 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = MainActivity.class.getSimpleName();
@@ -31,6 +38,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        XXPermissions.with(this)
+                .permission(Permission.WRITE_EXTERNAL_STORAGE)
+                .permission(Permission.READ_EXTERNAL_STORAGE)
+                .request(new OnPermissionCallback() {
+                    @Override
+                    public void onGranted(List<String> permissions, boolean all) {
+                        if (!all) {
+                            Toast.makeText(MainActivity.this,"获取部分权限成功，但部分权限未正常授予",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onDenied(List<String> permissions, boolean never) {
+                        if (never) {
+                            Toast.makeText(MainActivity.this,"被永久拒绝授权，请手动授予文件读写权限权限",Toast.LENGTH_SHORT).show();
+                            // 如果是被永久拒绝就跳转到应用权限系统设置页
+                        } else {
+                            Toast.makeText(MainActivity.this,"获取文件读写权限失败",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
         consumeCpu();
 //        findViewById(R.id.tv_text).postDelayed(runnable,2500);
         findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {

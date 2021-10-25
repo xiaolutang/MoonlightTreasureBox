@@ -30,12 +30,7 @@ public class StackSampler extends AbsSampler {
                     .append( BoxMessage.SEPARATOR);
         }
         if(needListener && mSampleListener != null){
-            AppExecutors.getInstance().diskIO().execute( new Runnable() {
-                @Override
-                public void run() {
-                    mSampleListener.onSampleEnd(msgId, new String(stringBuilder) );
-                }
-            } );
+            mSampleListener.onSampleEnd(msgId, new String(stringBuilder) );
 
         }
     }

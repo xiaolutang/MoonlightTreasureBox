@@ -62,12 +62,7 @@ public class CpuSample extends AbsSampler{
 
             String result = parse(cpuRate, pidCpuRate);
             if(needListener && mSampleListener != null){
-                AppExecutors.getInstance().diskIO().execute( new Runnable() {
-                    @Override
-                    public void run() {
-                        mSampleListener.onSampleEnd(msgId, result );
-                    }
-                } );
+                mSampleListener.onSampleEnd(msgId, result );
 
             }
         } catch (Throwable throwable) {
