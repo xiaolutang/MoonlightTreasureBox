@@ -3,7 +3,7 @@ package com.txl.blockmoonlighttreasurebox.handle;
 import android.util.Log;
 
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
-import com.txl.blockmoonlighttreasurebox.sample.ISamplerManager;
+import com.txl.blockmoonlighttreasurebox.sample.manager.IAnrSamplerListener;
 
 /**
  * Copyright (c) 2021, 唐小陆 All rights reserved.
@@ -11,7 +11,7 @@ import com.txl.blockmoonlighttreasurebox.sample.ISamplerManager;
  * date：2021/10/23
  * description：
  */
-public final class LogSample implements ISamplerManager.ISampleListener, ISamplerManager.IAnrSamplerListener {
+public final class LogSample implements IAnrSamplerListener {
     private final String TAG = LogSample.class.getSimpleName();
     @Override
     public boolean onMessageQueueSample(long baseTime, String msgId, String msg) {
@@ -112,5 +112,9 @@ public final class LogSample implements ISamplerManager.ISampleListener, ISample
                 .append( msg );
         Log.d( TAG,new String(builder) );
         return false;
+    }
+
+    @Override
+    public void messageQueueDispatchAnrFinish() {
     }
 }

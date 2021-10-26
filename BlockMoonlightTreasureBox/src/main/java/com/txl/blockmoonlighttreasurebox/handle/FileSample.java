@@ -12,7 +12,7 @@ import com.txl.blockmoonlighttreasurebox.block.BlockMonitorFace;
 import com.txl.blockmoonlighttreasurebox.info.AnrInfo;
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
 import com.txl.blockmoonlighttreasurebox.info.ScheduledInfo;
-import com.txl.blockmoonlighttreasurebox.sample.ISamplerManager;
+import com.txl.blockmoonlighttreasurebox.sample.manager.IAnrSamplerListener;
 import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
 import com.txl.blockmoonlighttreasurebox.utils.FileUtils;
 
@@ -36,7 +36,7 @@ import java.util.List;
  * date：2021/10/23
  * description：
  */
-public class FileSample implements ISamplerManager.ISampleListener, ISamplerManager.IAnrSamplerListener {
+public class FileSample implements IAnrSamplerListener {
 
     private static final String TAG = FileSample.class.getSimpleName();
     public static final FileCache<AnrInfo> fileCache = new FileCache<>();
@@ -112,10 +112,12 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
 
     @Override
     public boolean onJankSample(String msgId, MessageInfo msg) {
-        synchronized (this){
-
-        }
         return false;
+    }
+
+    @Override
+    public void messageQueueDispatchAnrFinish() {
+
     }
 
     public static class FileCache<T extends Serializable> {

@@ -2,7 +2,8 @@ package com.txl.blockmoonlighttreasurebox.block;
 
 import com.txl.blockmoonlighttreasurebox.handle.FileSample;
 import com.txl.blockmoonlighttreasurebox.handle.LogSample;
-import com.txl.blockmoonlighttreasurebox.sample.ISamplerManager;
+import com.txl.blockmoonlighttreasurebox.sample.manager.IAnrSamplerListener;
+import com.txl.blockmoonlighttreasurebox.sample.manager.IMainThreadSampleListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +24,16 @@ public class BlockBoxConfig {
      */
     private int jankFrame = 30;
 
-    private List<ISamplerManager.ISampleListener> sampleListeners = new ArrayList<>();
+    private List<IMainThreadSampleListener> sampleListeners = new ArrayList<>();
 
-    private List<ISamplerManager.IAnrSamplerListener> anrSamplerListeners = new ArrayList<>();
+    private List<IAnrSamplerListener> anrSamplerListeners = new ArrayList<>();
 
 
-    public List<ISamplerManager.ISampleListener> getSampleListeners() {
+    public List<IMainThreadSampleListener> getSampleListeners() {
         return sampleListeners;
     }
 
-    public List<ISamplerManager.IAnrSamplerListener> getAnrSamplerListeners() {
+    public List<IAnrSamplerListener> getAnrSamplerListeners() {
         return anrSamplerListeners;
     }
 
@@ -89,22 +90,22 @@ public class BlockBoxConfig {
             return this;
         }
 
-        public Builder addSampleListener(ISamplerManager.ISampleListener sampleListener) {
+        public Builder addSampleListener(IMainThreadSampleListener sampleListener) {
             config.sampleListeners.add( sampleListener );
             return this;
         }
 
-        public Builder addFirstSampleListener(ISamplerManager.ISampleListener sampleListener) {
+        public Builder addFirstSampleListener(IMainThreadSampleListener sampleListener) {
             config.sampleListeners.add( sampleListener );
             return this;
         }
 
-        public Builder addAnrSampleListener(ISamplerManager.IAnrSamplerListener anrSamplerListener) {
+        public Builder addAnrSampleListener(IAnrSamplerListener anrSamplerListener) {
             config.anrSamplerListeners.add( anrSamplerListener );
             return this;
         }
 
-        public Builder addFirstAnrSampleListener(ISamplerManager.IAnrSamplerListener anrSamplerListener) {
+        public Builder addFirstAnrSampleListener(IAnrSamplerListener anrSamplerListener) {
             config.anrSamplerListeners.add( anrSamplerListener );
             return this;
         }

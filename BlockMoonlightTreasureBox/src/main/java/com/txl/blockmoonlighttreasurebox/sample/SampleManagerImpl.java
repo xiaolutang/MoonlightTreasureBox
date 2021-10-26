@@ -4,6 +4,8 @@ import android.os.Looper;
 import android.util.Printer;
 
 import com.txl.blockmoonlighttreasurebox.block.BlockBoxConfig;
+import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
+import com.txl.blockmoonlighttreasurebox.sample.manager.ISamplerManager;
 import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
 
 import java.util.ArrayList;
@@ -15,11 +17,11 @@ import java.util.List;
  * date：2021/10/23
  * description：专门负责采样
  */
-public class SampleManagerImpl implements ISamplerManager{
+public class SampleManagerImpl implements ISamplerManager {
     private final List<AbsSampler> anrSample = new ArrayList<>();
     private long baseTime;
     private String msgId;
-    private final SamplerListenerChain samplerListenerChain = new SamplerListenerChain();
+    private final SamplerListenerChain samplerListenerChain  = new SamplerListenerChain();
     private SampleManagerImpl() {
         AbsSampler cpuSample = new CpuSample();
         cpuSample.setSampleListener( new AbsSampler.SampleListener() {
@@ -77,6 +79,21 @@ public class SampleManagerImpl implements ISamplerManager{
     }
 
     @Override
+    public void messageQueueDispatchAnrFinish() {
+
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
     public void addSample(AbsSampler sampler) {
         anrSample.add(sampler);
     }
@@ -87,7 +104,26 @@ public class SampleManagerImpl implements ISamplerManager{
 
     @Override
     public void onConfigChange(BlockBoxConfig config) {
-        samplerListenerChain.onConfigChange( config );
+        samplerListenerChain.clearListener();
+        samplerListenerChain.addSampleListener( config.getAnrSamplerListeners() );
+    }
+
+    @Override
+    public boolean onScheduledSample(boolean start, long baseTime, String msgId, long dealt) {
+        samplerListenerChain.onScheduledSample( start, baseTime, msgId, dealt );
+        return false;
+    }
+
+    @Override
+    public boolean onMsgSample(long baseTime, String msgId, MessageInfo msg) {
+        samplerListenerChain.onMsgSample( baseTime, msgId, msg );
+        return false;
+    }
+
+    @Override
+    public boolean onJankSample(String msgId, MessageInfo msg) {
+        samplerListenerChain.onJankSample( msgId,msg );
+        return false;
     }
 
     private static class SampleManagerImplHolder{

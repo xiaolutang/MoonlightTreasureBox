@@ -1,5 +1,7 @@
 package com.txl.blockmoonlighttreasurebox.sample;
 
+import com.txl.blockmoonlighttreasurebox.sample.manager.ISamplerManager;
+
 /**
  * Copyright (c) 2021, 唐小陆 All rights reserved.
  * author：txl
