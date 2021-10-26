@@ -76,6 +76,11 @@ public class SampleManagerImpl implements ISamplerManager{
 
     }
 
+    @Override
+    public void addSample(AbsSampler sampler) {
+        anrSample.add(sampler);
+    }
+
     public static SampleManagerImpl getInstance(){
         return SampleManagerImplHolder.impl;
     }

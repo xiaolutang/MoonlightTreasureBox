@@ -65,7 +65,7 @@ public class MessageInfo implements Serializable {
                 '}';
     }
 
-    private static String msgTypeToString(@MsgType int msgType){
+    public static String msgTypeToString(@MsgType int msgType){
         switch (msgType){
             case MSG_TYPE_NONE:
                 return "MSG_TYPE_NONE";

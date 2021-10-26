@@ -38,6 +38,7 @@ import java.util.List;
  */
 public class FileSample implements ISamplerManager.ISampleListener, ISamplerManager.IAnrSamplerListener {
 
+    private static final String TAG = FileSample.class.getSimpleName();
     public static final FileCache<AnrInfo> fileCache = new FileCache<>();
     public static final FileSample instance = new FileSample();
 
@@ -45,7 +46,7 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
 
 
     private FileSample() {
-        fileCache.init(BlockMonitorFace.getBlockMonitorFace(null).getApplicationContext(),"block_anr",10,"1.0.0");
+        fileCache.init(BlockMonitorFace.getBlockMonitorFace().getApplicationContext(),"block_anr",100,"1.0.0");
     }
 
     @Override
@@ -80,6 +81,7 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
                 public void run() {
                     String path = FileCache.sFormat.format(new Date());
                     temp.fileName = path;
+                    Log.d(TAG,"cacheData schedule size "+temp.scheduledSamplerCache.getAll().size()+"  file name : "+temp.fileName);
                     fileCache.cacheData(path,temp);
                     //通知可以展示ui
                 }
@@ -89,9 +91,9 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
     }
 
     @Override
-    public boolean onScheduledSample(long baseTime, String msgId, long dealt) {
+    public boolean onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
         synchronized (this){
-            anrInfo.scheduledSamplerCache.put( baseTime,new ScheduledInfo( dealt,msgId ) );
+            anrInfo.scheduledSamplerCache.put( baseTime,new ScheduledInfo( dealt,msgId ,start) );
         }
 
         return false;
@@ -100,6 +102,9 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
     @Override
     public boolean onMsgSample(long baseTime, String msgId, MessageInfo msg) {
         synchronized (this){
+            if(msg.msgType == MessageInfo.MSG_TYPE_GAP && anrInfo.messageSamplerCache.getLastValue().msgType == MessageInfo.MSG_TYPE_GAP){
+                Log.e(TAG,"error continuous gap");
+            }
             anrInfo.messageSamplerCache.put( baseTime,msg );
         }
         return false;
@@ -140,7 +145,7 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
         }
 
 
-        public File init(Context context,String rootDir, int maxSize, String appVersion){
+        public void init(Context context, String rootDir, int maxSize, String appVersion){
             if(maxSize > 2){
                 this.maxSize = maxSize;
             }
@@ -159,7 +164,6 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
             File[] files = diskCacheDir.listFiles();
             currentSize = files == null ? 0 : files.length;
             long m = getUsableSpace(diskCacheDir);
-            return diskCacheDir;
         }
 
         public synchronized void cacheData(String path, T serializable){
@@ -167,7 +171,7 @@ public class FileSample implements ISamplerManager.ISampleListener, ISamplerMana
             File file=new File(diskCacheDir.getPath()+ File.separator+path);
             //file.createNewFile();
             //获取输出流
-            //这里如果文件不存在会创建文件，这是写文件和读文件不同的地方
+            //这里如果文件不存在会创建文件，  如果文件存在，新写会覆盖以前的内容吗？
             ObjectOutputStream fos = null;
             try {
                 fos=new ObjectOutputStream(new FileOutputStream(file));

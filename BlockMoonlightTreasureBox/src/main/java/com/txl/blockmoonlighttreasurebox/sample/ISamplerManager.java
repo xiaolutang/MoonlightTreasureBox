@@ -18,6 +18,11 @@ public interface ISamplerManager extends BlockBoxConfig.IConfigChangeListener{
     void startAnrSample(String msgId, long baseTime);
 
     /**
+     * 采集其它的一些信息
+     * */
+    void addSample(AbsSampler sampler);
+
+    /**
      * 区别于ISampleListener 专门采集anr 信息的回调
      * */
     interface IAnrSamplerListener {
@@ -34,12 +39,14 @@ public interface ISamplerManager extends BlockBoxConfig.IConfigChangeListener{
 
     /**
      * 这些方法调用都在主线程
+     * 注意不要搞耗时操作
      * */
     interface ISampleListener{
         /**
          * 当前主线程的调度能力
+         * @param start true 发起本次调度  false结束
          * */
-        boolean onScheduledSample(long baseTime,String msgId,long dealt);
+        boolean onScheduledSample(boolean start,long baseTime,String msgId,long dealt);
         /**
          * 采集消息队列每次处理的消息
          * */

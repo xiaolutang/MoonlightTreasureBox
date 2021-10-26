@@ -10,7 +10,7 @@ import java.util.List;
  * Copyright (c) 2021, 唐小陆 All rights reserved.
  * author：txl
  * date：2021/10/23
- * description：
+ * description：todo 重构链式调用逻辑  并且重构  数据采集的逻辑  全部放在一个位置进行管理
  */
 public class SamplerListenerChain implements ISamplerManager.IAnrSamplerListener,ISamplerManager.ISampleListener, BlockBoxConfig.IConfigChangeListener {
     private List<ISamplerManager.IAnrSamplerListener> anrSamplerListeners = new ArrayList<>();
@@ -69,9 +69,9 @@ public class SamplerListenerChain implements ISamplerManager.IAnrSamplerListener
     }
 
     @Override
-    public boolean onScheduledSample(long baseTime, String msgId, long dealt) {
+    public boolean onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
         for (ISamplerManager.ISampleListener listener: sampleListeners){
-            if(listener.onScheduledSample( baseTime, msgId, dealt )){
+            if(listener.onScheduledSample(start, baseTime, msgId, dealt )){
                 return true;
             }
         }
@@ -80,6 +80,9 @@ public class SamplerListenerChain implements ISamplerManager.IAnrSamplerListener
 
     @Override
     public boolean onMsgSample(long baseTime, String msgId, MessageInfo msg) {
+        if(msg.msgType == MessageInfo.MSG_TYPE_ANR){
+            //接收到本次调度的anr完成
+        }
         for (ISamplerManager.ISampleListener listener: sampleListeners){
             if(listener.onMsgSample( baseTime, msgId, msg )){
                 return true;

@@ -3,8 +3,11 @@ package com.txl.blockmoonlighttreasurebox.cache;
 import android.os.SystemClock;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Copyright (c) 2021, 唐小陆 All rights reserved.
@@ -18,8 +21,10 @@ public class TimeLruCache<V> implements Serializable {
      * */
     private long offsetTime = 30 * 1000;
     private long lastPutTime = 0;
+    private V lastValue;
     private static final long serialVersionUID = 1L;
-    private final LinkedHashMap<Long,V> linkedHashMap = new TimeLinkedHashMap(0, 0.75f, true);
+    //按插入顺序保存 依次移除时间最早的
+    private final LinkedHashMap<Long,V> linkedHashMap = new TimeLinkedHashMap(0, 0.75f, false);
 
     public TimeLruCache() {
     }
@@ -37,8 +42,23 @@ public class TimeLruCache<V> implements Serializable {
     public void put(long baseTime, V value){
         linkedHashMap.put( baseTime,value );
         lastPutTime = baseTime;
+        lastValue = value;
     }
 
+    /**
+     * 存储下最后一个元素，方便快速获取
+     * */
+    public V getLastValue() {
+        return lastValue;
+    }
+
+    public List<V> getAll(){
+        List<V> list = new ArrayList<>();
+        for (Map.Entry<Long, V> entry : linkedHashMap.entrySet()) {//
+            list.add(entry.getValue());
+        }
+        return list;
+    }
 
     private class TimeLinkedHashMap extends LinkedHashMap<Long,V>{
 

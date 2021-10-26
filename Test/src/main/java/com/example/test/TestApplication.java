@@ -19,10 +19,10 @@ public class TestApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        BlockMonitorFace.getBlockMonitorFace(this)
-//                .updateConfig(new BlockBoxConfig.Builder().build())
-//                .startMonitor();
-        BlockCanary.install(TestApplication.this, new BlockCanaryContext()).start();
+        BlockMonitorFace.init(this)
+                .updateConfig(new BlockBoxConfig.Builder().build())
+                .startMonitor();
+//        BlockCanary.install(TestApplication.this, new BlockCanaryContext()).start();
 
     }
 }

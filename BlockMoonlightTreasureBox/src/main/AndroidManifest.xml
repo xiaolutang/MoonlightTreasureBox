@@ -8,8 +8,8 @@
 
     <application>
         <activity
-            android:name=".ui.AnalyzeActivity"
-            android:exported="true"
+            android:name=".ui.analyze.AnalyzeActivity"
+            android:exported="false"
             android:label="@string/log_analyze"/>
         <activity
             android:name=".ui.DisplayActivity"

@@ -16,10 +16,9 @@ import android.widget.TextView;
 import com.txl.blockmoonlighttreasurebox.R;
 import com.txl.blockmoonlighttreasurebox.handle.FileSample;
 import com.txl.blockmoonlighttreasurebox.info.AnrInfo;
+import com.txl.blockmoonlighttreasurebox.ui.analyze.AnalyzeActivity;
 import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -54,7 +53,7 @@ public class DisplayActivity extends AppCompatActivity {
             return;
         }
         refresh.set(true);
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        AppExecutors.getInstance().networkIO().execute(new Runnable() {
             @Override
             public void run() {
                 refresh.set(false);
@@ -99,7 +98,7 @@ public class DisplayActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     AnalyzeProtocol.anrInfo = anrInfoList.get(index);
                     Context context = fileViewHolder.itemView.getContext();
-                    context.startActivity(new Intent(context,AnalyzeActivity.class));
+                    context.startActivity(new Intent(context, AnalyzeActivity.class));
                 }
             });
             fileViewHolder.textView.setText(anrInfoList.get(i).fileName);

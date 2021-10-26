@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/icon_item_scheduling_bg"
+    android:padding="@dimen/dp_2">
+    <!--300ms 90dp  那么每 dp 对应0.9ms  该位置反映了两个消息处理的时间间隔-->
+    <TextView
+        android:id="@+id/tvFixTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="@dimen/dp_90"
+        android:layout_height="match_parent"
+        android:text="300ms"
+        android:gravity="center"
+        android:background="#66CC00"/>
+    <TextView
+        android:id="@+id/tvSchedulingDealt"
+        android:layout_width="@dimen/dp_30"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toEndOf="@+id/tvFixTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

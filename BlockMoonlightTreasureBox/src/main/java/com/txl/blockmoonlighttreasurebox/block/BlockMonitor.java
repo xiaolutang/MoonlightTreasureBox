@@ -58,15 +58,25 @@ public class BlockMonitor implements Printer,IBlock {
     private SamplerListenerChain sampleListener = new SamplerListenerChain();
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private long checkId = -1;
     Runnable checkThreadRunnable = new Runnable() {
         long dealtTime = SystemClock.elapsedRealtime();
+
         @Override
         public void run() {
             //时间偏差 差值越大说明调度能力越差
-            long offset = SystemClock.elapsedRealtime() - dealtTime;
-            sampleListener.onScheduledSample( dealtTime,"",offset );
-            dealtTime = SystemClock.elapsedRealtime();
-            startCheckTime();
+            //就采集一次。
+            long offset = SystemClock.elapsedRealtime() - dealtTime - config.getWarnTime();
+            if(checkId > -1){
+                //需要注意的是，这个只能反映发生anr前的调度能力，会存在发生anr前最后一次调度检测没有收集到。
+                sampleListener.onScheduledSample(false, dealtTime,""+checkId,offset );
+            }
+            if(start){
+                checkId++;
+                dealtTime = SystemClock.elapsedRealtime();
+//                sampleListener.onScheduledSample(true, dealtTime,""+checkId,offset );
+                mainHandler.postDelayed(checkThreadRunnable, config.getWarnTime());
+            }
         }
     };
 
@@ -78,7 +88,7 @@ public class BlockMonitor implements Printer,IBlock {
             throw new RuntimeException("before start please set config");
         }
         if(start)
-        mainHandler.postDelayed(checkThreadRunnable, config.getWarnTime());
+        mainHandler.post(checkThreadRunnable);
     }
 
     public void setApplicationContext(Context applicationContext) {
@@ -122,7 +132,7 @@ public class BlockMonitor implements Printer,IBlock {
         currentMsg = BoxMessageUtils.parseLooperStart( msg );
         currentMsg.setMsgId( monitorMsgId );
         cpuTempStartTime = SystemClock.currentThreadTimeMillis();
-        //两次消息时间差较大，单独处理消息且增加一个gap消息
+        //两次消息时间差较大，单独处理消息且增加一个gap消息 不应该存在两个连续的gap消息
         if (tempStartTime - lastEnd > config.getGapTime() && lastEnd != noInit) {
             if (messageInfo != null) {
                 handleMsg();
@@ -131,6 +141,7 @@ public class BlockMonitor implements Printer,IBlock {
             messageInfo.msgType = MessageInfo.MSG_TYPE_GAP;
             messageInfo.wallTime = tempStartTime - lastEnd;
             messageInfo.cpuTime = cpuTempStartTime - lastCpuEnd;
+            startTime = tempStartTime;
             handleMsg();
         }
         if (messageInfo == null) {
@@ -165,6 +176,9 @@ public class BlockMonitor implements Printer,IBlock {
             messageInfo.boxMessages.add( currentMsg );
             handleMsg();
         } else {
+            if(messageInfo == null){
+                messageInfo = new MessageInfo();
+            }
             //统计每一次消息分发耗时 他们的叠加就是总耗时
             messageInfo.wallTime = lastEnd - startTime;
             //生成消息的时候，当前线程总的执行时间
@@ -219,6 +233,7 @@ public class BlockMonitor implements Printer,IBlock {
         mainHandler.removeCallbacksAndMessages( null );
         anrMonitorThread = null;
         start = false;
+        checkId = -1;
         return this;
     }
 
@@ -264,6 +279,17 @@ public class BlockMonitor implements Printer,IBlock {
                         //发生anr
                         Object mLogging = ReflectUtils.reflectFiled(Looper.getMainLooper(),Looper.class,"mLogging");
                         if(mLogging != BlockMonitor.this){
+                            //采集当前调度的anr消息
+                            // fixme 如何统计主线程此时的cpu时间？  能不能暂时先把信息发送过去？等到正真本次消息调度结束在来修正？cpu时间
+                            // fixme 如果等待 修正cpu时间 那么再次期间还会有别的消息采集吗？
+                            handleMsg();
+                            MessageInfo temp = messageInfo;
+                            messageInfo = new MessageInfo();
+                            messageInfo.wallTime = SystemClock.elapsedRealtime() - tempStartTime;
+                            messageInfo.cpuTime = SystemClock.currentThreadTimeMillis() - cpuTempStartTime;
+                            messageInfo.msgType = MessageInfo.MSG_TYPE_ANR;
+                            messageInfo.boxMessages.add( currentMsg );
+                            handleMsg();
                             startMonitor();
                             Log.e(TAG,"startMonitor MainLooper printer set by other : "+mLogging);
                             return;

@@ -75,7 +75,7 @@ public final class LogSample implements ISamplerManager.ISampleListener, ISample
     }
 
     @Override
-    public boolean onScheduledSample(long baseTime, String msgId, long dealt) {
+    public boolean onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onScheduledSample" )
                 .append( "  baseTime : " )

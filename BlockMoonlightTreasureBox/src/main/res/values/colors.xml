@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gap">#666</color>
+    <color name="warn">#FF6600</color>
+    <color name="anr">#FF0000</color>
+    <color name="info">#99FFCC</color>
+    <color name="activity_thread_h">#FFCCFF</color>
+</resources>

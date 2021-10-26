@@ -35,9 +35,20 @@ public class BlockMonitorFace implements IBlock{
         return blockMonitor.updateConfig(config);
     }
 
-    public static IBlock getBlockMonitorFace(Context context) {
+    public static IBlock getBlockMonitorFace() {
+        return blockMonitorFace;
+    }
+
+    public static IBlock init(Context context){
+        if(context == null){
+            throw new RuntimeException("please call getBlockMonitorFace with not null context to init ");
+        }
         if(blockMonitorFace == null){//这里并不在意多线程产生了多个BlockMonitorFace 对象
-            blockMonitorFace = new BlockMonitorFace(context);
+            synchronized (BlockMonitorFace.class){
+                if(blockMonitorFace==null){
+                    blockMonitorFace = new BlockMonitorFace(context);
+                }
+            }
         }
         return blockMonitorFace;
     }

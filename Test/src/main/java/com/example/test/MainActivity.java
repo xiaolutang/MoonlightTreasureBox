@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 consumeCpu();
             }
-        },5000);
+        },3*5000);
         findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
