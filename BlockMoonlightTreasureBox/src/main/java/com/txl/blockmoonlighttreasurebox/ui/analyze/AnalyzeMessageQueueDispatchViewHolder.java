@@ -25,7 +25,12 @@ public class AnalyzeMessageQueueDispatchViewHolder extends RecyclerView.ViewHold
         itemView.setBackgroundResource(getItemBg(messageInfo));
         tvMsgId.setText("msgId: ");
         if(messageInfo.boxMessages != null && messageInfo.boxMessages.size() != 0){
-            tvMsgId.setText("msgId: "+messageInfo.boxMessages.get(0).getMsgId());
+            if(messageInfo.boxMessages.get(0) != null){
+                tvMsgId.setText("msgId: "+messageInfo.boxMessages.get(0).getMsgId());
+            }else {
+                tvMsgId.setText("msgId: ");
+            }
+
         }
         tvMsgType.setText("消息类型："+MessageInfo.msgTypeToString(messageInfo.msgType));
         tvWallTime.setText("wall: "+messageInfo.wallTime);

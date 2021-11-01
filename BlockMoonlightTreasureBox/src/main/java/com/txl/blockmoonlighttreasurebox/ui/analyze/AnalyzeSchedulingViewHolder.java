@@ -13,19 +13,23 @@ import com.txl.blockmoonlighttreasurebox.utils.DisplayUtil;
 
 public class AnalyzeSchedulingViewHolder extends RecyclerView.ViewHolder {
     TextView tvSchedulingDealt ;
+    TextView tvMsgId ;
     // 300ms 90dp  那么每 dp 对应0.9ms
     float dpMs = 0.9f;
     public AnalyzeSchedulingViewHolder(@NonNull View itemView) {
         super(itemView);
         tvSchedulingDealt = itemView.findViewById(R.id.tvSchedulingDealt);
+        tvMsgId = itemView.findViewById(R.id.tvMsgId);
     }
 
     public void pares(ScheduledInfo info){
-        int widthPx = DisplayUtil.dip2px(itemView.getContext(),info.getDealt()*dpMs);
+        int widthPx = Math.max(itemView.getResources().getDimensionPixelSize(R.dimen.dp_40),(int) (info.getDealt()*dpMs));
         tvSchedulingDealt.setText(info.getDealt()+"ms");
         ViewGroup.LayoutParams params = tvSchedulingDealt.getLayoutParams();
-        params.width = (int) (info.getDealt()*dpMs);
+
+        params.width = widthPx;
         tvSchedulingDealt.setLayoutParams(params);
+//        tvMsgId.setText("msgId："+info.getMsgId());
     }
 
 }

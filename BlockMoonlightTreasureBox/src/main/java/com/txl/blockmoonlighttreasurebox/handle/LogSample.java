@@ -14,7 +14,7 @@ import com.txl.blockmoonlighttreasurebox.sample.manager.IAnrSamplerListener;
 public final class LogSample implements IAnrSamplerListener {
     private final String TAG = LogSample.class.getSimpleName();
     @Override
-    public boolean onMessageQueueSample(long baseTime, String msgId, String msg) {
+    public void onMessageQueueSample(long baseTime, String msgId, String msg) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onMessageQueueSample" )
                 .append( "  baseTime : " )
@@ -24,11 +24,10 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  msg : " )
                 .append( msg );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override
-    public boolean onCpuSample(long baseTime, String msgId, String msg) {
+    public void onCpuSample(long baseTime, String msgId, String msg) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onCpuSample" )
                 .append( "  baseTime : " )
@@ -38,11 +37,10 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  msg : " )
                 .append( msg );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override
-    public boolean onMemorySample(long baseTime, String msgId, String msg) {
+    public void onMemorySample(long baseTime, String msgId, String msg) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onMemorySample" )
                 .append( "  baseTime : " )
@@ -52,11 +50,10 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  msg : " )
                 .append( msg );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override
-    public boolean onMainThreadStackSample(long baseTime, String msgId, String msg) {
+    public void onMainThreadStackSample(long baseTime, String msgId, String msg) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onMainThreadStackSample" )
                 .append( "  baseTime : " )
@@ -66,16 +63,15 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  msg : " )
                 .append( msg );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override
-    public boolean onAllAnrMessageSampleEnd() {
-        return false;
+    public void onSampleAnrMsg() {
+
     }
 
     @Override
-    public boolean onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
+    public void onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onScheduledSample" )
                 .append( "  baseTime : " )
@@ -85,11 +81,10 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  dealt : " )
                 .append( dealt );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override
-    public boolean onMsgSample(long baseTime, String msgId, MessageInfo msg) {
+    public void onMsgSample(long baseTime, String msgId, MessageInfo msg) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onMsgSample" )
                 .append( "  baseTime : " )
@@ -99,11 +94,10 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  msg : " )
                 .append( msg );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override
-    public boolean onJankSample(String msgId, MessageInfo msg) {
+    public void onJankSample(String msgId, MessageInfo msg) {
         StringBuilder builder = new StringBuilder();
         builder.append( "onJankSample" )
                 .append( " msgId : " )
@@ -111,7 +105,6 @@ public final class LogSample implements IAnrSamplerListener {
                 .append( "  msg : " )
                 .append( msg );
         Log.d( TAG,new String(builder) );
-        return false;
     }
 
     @Override

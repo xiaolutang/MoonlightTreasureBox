@@ -14,5 +14,5 @@ public class AnrInfo implements Serializable {
     public TimeLruCache<ScheduledInfo> scheduledSamplerCache = new TimeLruCache<>();
     public StringBuilder messageQueueSample = new StringBuilder();
     public String mainThreadStack;
-    public String fileName;
+    public String markTime;
 }

@@ -1,7 +1,6 @@
 package com.txl.blockmoonlighttreasurebox.block;
 
 import com.txl.blockmoonlighttreasurebox.handle.FileSample;
-import com.txl.blockmoonlighttreasurebox.handle.LogSample;
 import com.txl.blockmoonlighttreasurebox.sample.manager.IAnrSamplerListener;
 import com.txl.blockmoonlighttreasurebox.sample.manager.IMainThreadSampleListener;
 
@@ -62,9 +61,6 @@ public class BlockBoxConfig {
         private final BlockBoxConfig config;
         public Builder(){
             config = new BlockBoxConfig();
-            LogSample logSample = new LogSample();
-            config.anrSamplerListeners.add( logSample );
-            config.sampleListeners.add( logSample );
             FileSample fileSample = FileSample.instance;
             config.anrSamplerListeners.add( fileSample );
             config.sampleListeners.add( fileSample );

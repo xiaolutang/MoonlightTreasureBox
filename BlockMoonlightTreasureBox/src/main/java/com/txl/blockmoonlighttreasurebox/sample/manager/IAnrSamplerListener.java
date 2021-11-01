@@ -7,13 +7,11 @@ public interface IAnrSamplerListener extends IMainThreadSampleListener {
     /**
      * 收集消息队列中未处理的消息
      */
-    boolean onMessageQueueSample(long baseTime, String msgId, String msg);
+    void onMessageQueueSample(long baseTime, String msgId, String msg);
 
-    boolean onCpuSample(long baseTime, String msgId, String msg);
+    void onCpuSample(long baseTime, String msgId, String msg);
 
-    boolean onMemorySample(long baseTime, String msgId, String msg);
+    void onMemorySample(long baseTime, String msgId, String msg);
 
-    boolean onMainThreadStackSample(long baseTime, String msgId, String msg);
-
-    boolean onAllAnrMessageSampleEnd();
+    void onMainThreadStackSample(long baseTime, String msgId, String msg);
 }

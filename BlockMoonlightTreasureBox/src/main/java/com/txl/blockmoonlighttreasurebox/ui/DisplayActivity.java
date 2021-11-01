@@ -61,7 +61,7 @@ public class DisplayActivity extends AppCompatActivity {
                 Collections.sort(anrInfoList, new Comparator<AnrInfo>() {
                     @Override
                     public int compare(AnrInfo o1, AnrInfo o2) {
-                        return o2.fileName.compareTo(o1.fileName);
+                        return o2.markTime.compareTo(o1.markTime);
                     }
                 });
                 adapter.anrInfoList = anrInfoList;
@@ -101,7 +101,7 @@ public class DisplayActivity extends AppCompatActivity {
                     context.startActivity(new Intent(context, AnalyzeActivity.class));
                 }
             });
-            fileViewHolder.textView.setText(anrInfoList.get(i).fileName);
+            fileViewHolder.textView.setText(anrInfoList.get(i).markTime);
         }
 
         @Override

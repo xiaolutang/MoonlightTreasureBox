@@ -1,6 +1,7 @@
 package com.txl.blockmoonlighttreasurebox.sample;
 
 import android.os.Looper;
+import android.util.Log;
 import android.util.Printer;
 
 import com.txl.blockmoonlighttreasurebox.block.BlockBoxConfig;
@@ -10,6 +11,8 @@ import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Copyright (c) 2021, 唐小陆 All rights reserved.
@@ -18,7 +21,11 @@ import java.util.List;
  * description：专门负责采样
  */
 public class SampleManagerImpl implements ISamplerManager {
+    private static final String TAG = SampleManagerImpl.class.getSimpleName();
     private final List<AbsSampler> anrSample = new ArrayList<>();
+    private final AtomicBoolean inSample = new AtomicBoolean(false);
+    private CountDownLatch latch;
+    private int latchCount = 1;
     private long baseTime;
     private String msgId;
     private final SamplerListenerChain samplerListenerChain  = new SamplerListenerChain();
@@ -31,12 +38,15 @@ public class SampleManagerImpl implements ISamplerManager {
                     @Override
                     public void run() {
                         samplerListenerChain.onCpuSample( baseTime,msgId,msg );
+                        latch.countDown();
                     }
                 });
 
             }
         } );
         anrSample.add( cpuSample );
+
+        latchCount ++;
         AbsSampler stackSample = new StackSampler( Thread.currentThread() );
         stackSample.setSampleListener( new AbsSampler.SampleListener() {
             @Override
@@ -45,16 +55,25 @@ public class SampleManagerImpl implements ISamplerManager {
                     @Override
                     public void run() {
                         samplerListenerChain.onMainThreadStackSample( baseTime,msgId,msg );
+                        latch.countDown();
                     }
                 });
             }
         } );
         anrSample.add( stackSample );
+        latchCount ++;
     }
 
     @Override
     public void startAnrSample(String msgId, long baseTime) {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+        if(inSample.get()){
+            Log.d(TAG,"startAnrSample return ");
+            return;
+        }
+        Log.d(TAG,"startAnrSample ");
+        inSample.set(true);
+        latch = new CountDownLatch(latchCount);
+        AppExecutors.getInstance().networkIO().execute(new Runnable() {
             @Override
             public void run() {
                 SampleManagerImpl.this.baseTime = baseTime;
@@ -64,22 +83,34 @@ public class SampleManagerImpl implements ISamplerManager {
                 }
                 //获取当前消息队列的情况
                 Looper.getMainLooper().dump( new MessageQueuePrint() ,"" );
-
-                //todo 采集内存信息
+                try {
+                    latch.await();
+                    dispatchMessage();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        });
-        //为了能在所有消息处理之后回调
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                samplerListenerChain.onAllAnrMessageSampleEnd();
-            }
-        });
 
+        });
+    }
+
+    private void dispatchMessage() {
+        samplerListenerChain.messageQueueDispatchAnrFinish();
+        inSample.set(false);
     }
 
     @Override
     public void messageQueueDispatchAnrFinish() {
+        if(latch != null){
+            latch.countDown();
+        }else {
+            Log.e(TAG,"messageQueueDispatchAnrFinish but latch is null inSample is "+inSample.get());
+            dispatchMessage();
+        }
+    }
+
+    @Override
+    public void onSampleAnrMsg() {
 
     }
 
@@ -109,21 +140,18 @@ public class SampleManagerImpl implements ISamplerManager {
     }
 
     @Override
-    public boolean onScheduledSample(boolean start, long baseTime, String msgId, long dealt) {
+    public void onScheduledSample(boolean start, long baseTime, String msgId, long dealt) {
         samplerListenerChain.onScheduledSample( start, baseTime, msgId, dealt );
-        return false;
     }
 
     @Override
-    public boolean onMsgSample(long baseTime, String msgId, MessageInfo msg) {
+    public void onMsgSample(long baseTime, String msgId, MessageInfo msg) {
         samplerListenerChain.onMsgSample( baseTime, msgId, msg );
-        return false;
     }
 
     @Override
-    public boolean onJankSample(String msgId, MessageInfo msg) {
+    public void onJankSample(String msgId, MessageInfo msg) {
         samplerListenerChain.onJankSample( msgId,msg );
-        return false;
     }
 
     private static class SampleManagerImplHolder{

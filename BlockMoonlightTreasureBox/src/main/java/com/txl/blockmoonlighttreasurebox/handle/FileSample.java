@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.txl.blockmoonlighttreasurebox.block.BlockMonitorFace;
@@ -46,77 +47,86 @@ public class FileSample implements IAnrSamplerListener {
 
 
     private FileSample() {
-        fileCache.init(BlockMonitorFace.getBlockMonitorFace().getApplicationContext(),"block_anr",100,"1.0.0");
+        fileCache.init(BlockMonitorFace.getBlockMonitorFace().getApplicationContext(),"block_anr",10,"1.0.0");
     }
 
     @Override
-    public boolean onMessageQueueSample(long baseTime, String msgId, String msg) {
+    public void onMessageQueueSample(long baseTime, String msgId, String msg) {
         anrInfo.messageQueueSample.append( msg );
-        return false;
     }
 
     @Override
-    public boolean onCpuSample(long baseTime, String msgId, String msg) {
-        return false;
+    public void onCpuSample(long baseTime, String msgId, String msg) {
+
     }
 
     @Override
-    public boolean onMemorySample(long baseTime, String msgId, String msg) {
-        return false;
+    public void onMemorySample(long baseTime, String msgId, String msg) {
     }
 
     @Override
-    public boolean onMainThreadStackSample(long baseTime, String msgId, String msg) {
+    public void onMainThreadStackSample(long baseTime, String msgId, String msg) {
         anrInfo.mainThreadStack = msg;
-        return false;
     }
 
     @Override
-    public boolean onAllAnrMessageSampleEnd() {
+    public void onSampleAnrMsg() {
         synchronized (this){
             AnrInfo temp = anrInfo;
-            anrInfo = new AnrInfo();
+            String path = FileCache.sFormat.format(new Date());
+            if(TextUtils.isEmpty(temp.markTime)){
+                temp.markTime = path;
+            }
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
-                    String path = FileCache.sFormat.format(new Date());
-                    temp.fileName = path;
-                    Log.d(TAG,"cacheData schedule size "+temp.scheduledSamplerCache.getAll().size()+"  file name : "+temp.fileName);
-                    fileCache.cacheData(path,temp);
+
+                    Log.d(TAG,"cacheData schedule size "+temp.scheduledSamplerCache.getAll().size()+"  file name : "+temp.markTime);
+                    fileCache.cacheData(temp.markTime,temp);
                     //通知可以展示ui
                 }
             });
         }
-        return false;
     }
 
     @Override
-    public boolean onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
+    public void onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
         synchronized (this){
             anrInfo.scheduledSamplerCache.put( baseTime,new ScheduledInfo( dealt,msgId ,start) );
         }
-
-        return false;
     }
 
     @Override
-    public boolean onMsgSample(long baseTime, String msgId, MessageInfo msg) {
+    public void onMsgSample(long baseTime, String msgId, MessageInfo msg) {
         synchronized (this){
             if(msg.msgType == MessageInfo.MSG_TYPE_GAP && anrInfo.messageSamplerCache.getLastValue().msgType == MessageInfo.MSG_TYPE_GAP){
                 Log.e(TAG,"error continuous gap");
             }
             anrInfo.messageSamplerCache.put( baseTime,msg );
         }
-        return false;
     }
 
     @Override
-    public boolean onJankSample(String msgId, MessageInfo msg) {
-        return false;
+    public void onJankSample(String msgId, MessageInfo msg) {
+        StringBuilder builder = new StringBuilder();
+        builder.append( "onJankSample" )
+                .append( " msgId : " )
+                .append( msgId )
+                .append( "  msg : " )
+                .append( msg );
+        Log.d( TAG,new String(builder) );
     }
 
     @Override
     public void messageQueueDispatchAnrFinish() {
+        AnrInfo temp = anrInfo;
+        anrInfo = new AnrInfo();
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                fileCache.cacheData(temp.markTime,temp);
+            }
+        });
 
     }
 
@@ -183,7 +193,7 @@ public class FileSample implements IAnrSamplerListener {
             }finally {
                 FileUtils.closeStream(fos);
             }
-            currentSize++;
+            currentSize = diskCacheDir.listFiles() == null ? 0 : diskCacheDir.listFiles().length;
             if(currentSize>maxSize){
                 removeLastFile();
             }

@@ -68,7 +68,7 @@ public class BlockMonitor implements Printer,IBlock {
             long offset = SystemClock.elapsedRealtime() - dealtTime - config.getWarnTime();
             if(checkId > -1){
                 //需要注意的是，这个只能反映发生anr前的调度能力，会存在发生anr前最后一次调度检测没有收集到。
-                samplerManager.onScheduledSample(false, dealtTime,""+checkId,offset );
+                samplerManager.onScheduledSample(false, dealtTime,""+monitorMsgId,offset );
             }
             if(start){
                 checkId++;
@@ -271,8 +271,16 @@ public class BlockMonitor implements Printer,IBlock {
         }
 
         @Override
+        public synchronized void start() {
+            super.start();
+            Log.d(TAG,"AnrMonitorThread  start ");
+            anrTime = SystemClock.elapsedRealtime() + config.getAnrTime();//重置anr 发生时间
+        }
+
+        @Override
         public void run() {
             super.run();
+            Log.d(TAG,"AnrMonitorThread  run ");
             while (start){
                 //以消息开始时间加上超时时长为目标超时时间，每次超时时间到了之后，检查当前时间是否大于或等于目标时间，
                 // 如果满足，则说明目标时间没有更新，也就是说本次消息没结束，则抓取堆栈。如果每次超时之后，
@@ -283,13 +291,14 @@ public class BlockMonitor implements Printer,IBlock {
                     if(monitorMsgId == msgId){
                         synchronized (BlockMonitor.class){
                             if(monitorMsgId != msgId){
-                                return;
+                                continue;
                             }
                             anrTime = now + config.getAnrTime();//重置anr 发生时间
                             //发生anr
                             Object mLogging = ReflectUtils.reflectFiled(Looper.getMainLooper(),Looper.class,"mLogging");
                             if(mLogging != BlockMonitor.this){
                                 Log.e(TAG,"startMonitor MainLooper printer set by other : "+mLogging);
+                                stopMonitor();
                                 return;
                             }
                             Log.e(TAG,"occur anr start dump stack and other info ");
@@ -314,11 +323,13 @@ public class BlockMonitor implements Printer,IBlock {
                         anrTime = monitorAnrTime;
                     }
                 }
-                long sleepTime = SystemClock.elapsedRealtime() - anrTime;
+                long sleepTime = anrTime - SystemClock.elapsedRealtime();
                 if(sleepTime > 0){
+//                    Log.d(TAG,"AnrMonitorThread  sleep time  "+sleepTime);
                     SystemClock.sleep(sleepTime);
                 }
             }
+            Log.d(TAG,"AnrMonitorThread  run end start : "+start);
         }
     }
 }

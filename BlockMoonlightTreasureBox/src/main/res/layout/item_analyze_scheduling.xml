@@ -4,21 +4,34 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/icon_item_scheduling_bg"
-    android:padding="@dimen/dp_2">
+    android:padding="@dimen/dp_2"
+    android:maxWidth="@dimen/dp_270">
+    <TextView
+        android:id="@+id/tvMsgId"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="@dimen/dp_90"
+        android:layout_height="wrap_content"
+        android:text="300ms"
+        android:background="#66CC00"
+        android:visibility="gone"/>
     <!--300ms 90dp  那么每 dp 对应0.9ms  该位置反映了两个消息处理的时间间隔-->
     <TextView
         android:id="@+id/tvFixTime"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMsgId"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="@dimen/dp_90"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:text="300ms"
         android:gravity="center"
         android:background="#66CC00"/>
     <TextView
         android:id="@+id/tvSchedulingDealt"
-        android:layout_width="@dimen/dp_30"
+        android:minWidth="@dimen/dp_40"
+        android:layout_width="@dimen/dp_40"
         android:layout_height="match_parent"
+        android:text="30ms"
         app:layout_constraintStart_toEndOf="@+id/tvFixTime"
         app:layout_constraintEnd_toEndOf="parent"
         android:gravity="center"/>
