@@ -11,13 +11,22 @@
         android:orientation="vertical"
         android:id="@+id/linearLayout">
         <com.example.test.JankView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:background="#655"
+            android:text="测试anr时，前台广播等待10s"
+            android:gravity="center"
+            android:textSize="@dimen/sp_18"
+            />
+        <com.example.test.JankView
             android:id="@+id/jankView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_60"
             android:background="#655"
             android:text="Jank"
             android:gravity="center"
-            android:textSize="@dimen/sp_18"/>
+            android:textSize="@dimen/sp_18"
+            android:layout_marginTop="@dimen/dp_10"/>
         <TextView
             android:id="@+id/tvTestJank"
             android:layout_width="match_parent"

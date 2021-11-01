@@ -17,6 +17,7 @@ public class AnrTestBroadcast extends BroadcastReceiver {
 
     public static void sentBroadcast(Context context){
         Intent intent = new Intent();
+        intent.addFlags( Intent.FLAG_RECEIVER_FOREGROUND );
         intent.setAction(ACTION_TEST_ANR);
         context.sendOrderedBroadcast(intent,null);
     }

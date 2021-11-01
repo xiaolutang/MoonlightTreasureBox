@@ -1,5 +1,7 @@
 package com.example.test;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -110,15 +112,16 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tvTestAnr2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (int i=10;i>0;i--){
+                for (int i=25;i>0;i--){
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            //2s
-                            SystemClock.sleep(2000);
+                            //500ms
+                            SystemClock.sleep(500);
                         }
                     });
                 }
+                //如何捕获这种anr信息？
                 AnrTestBroadcast.sentBroadcast(MainActivity.this);
             }
         });
