@@ -28,7 +28,7 @@ public class BlockMonitor implements Printer,IBlock {
     /**
      * 每一帧的时间
      */
-    private final long mFrameIntervalNanos = ReflectUtils.reflectLongField( Choreographer.getInstance(), Choreographer.class, "mFrameIntervalNanos", 16 );
+    private final float mFrameIntervalNanos = ReflectUtils.reflectLongField( Choreographer.getInstance(), Choreographer.class, "mFrameIntervalNanos", 16000000 )*0.000001f;
     private final long noInit = -1;
     private long startTime = noInit, tempStartTime = noInit, lastEnd = noInit;
     private long cupStartTime = noInit, cpuTempStartTime = noInit, lastCpuEnd = noInit;

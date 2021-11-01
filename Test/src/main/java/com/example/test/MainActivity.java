@@ -1,6 +1,8 @@
 package com.example.test;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +19,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = MainActivity.class.getSimpleName();
+    private JankView jankView;
+    AnrTestBroadcast anrTestBroadcast;
+    Handler mainHandler = new Handler(Looper.getMainLooper());
 
     Runnable runnable = new Runnable() {
         @Override
@@ -61,19 +66,68 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 //        findViewById(R.id.tv_text).postDelayed(runnable,2500);
-        findViewById(R.id.tv_text).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                consumeCpu();
-            }
-        },3*5000);
-        findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {
+//        findViewById(R.id.tv_text).postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                consumeCpu();
+//            }
+//        },3*5000);
+//        findViewById(R.id.tv_test_thread_time).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                testThreadTime();
+//            }
+//        });
+        anrTestBroadcast = AnrTestBroadcast.register(this);
+        jankView = findViewById(R.id.jankView);
+        findViewById(R.id.tvTestJank).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                testThreadTime();
+//                mainHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //12s
+//
+//                        mainHandler.postDelayed(this,2000);
+//                    }
+//                },500);
+                jankView.setJank(true);
             }
         });
+        findViewById(R.id.tvTestAnr1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //12s
+                        SystemClock.sleep(12000);
+                    }
+                });
+                AnrTestBroadcast.sentBroadcast(MainActivity.this);
+            }
+        });
+        findViewById(R.id.tvTestAnr2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i=10;i>0;i--){
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //2s
+                            SystemClock.sleep(2000);
+                        }
+                    });
+                }
+                AnrTestBroadcast.sentBroadcast(MainActivity.this);
+            }
+        });
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(anrTestBroadcast);
     }
 
     private void consumeCpu(){
