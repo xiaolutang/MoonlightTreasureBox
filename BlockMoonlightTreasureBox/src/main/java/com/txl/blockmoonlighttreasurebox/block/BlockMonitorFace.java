@@ -7,12 +7,13 @@ public class BlockMonitorFace implements IBlock{
     private final IBlock blockMonitor;
     private static IBlock blockMonitorFace;
 
+
     private BlockMonitorFace(Context mApplicationContext) {
         blockMonitorFace = this;
         this.mApplicationContext = mApplicationContext.getApplicationContext();
         BlockMonitor.getInstance().setApplicationContext(this.mApplicationContext);
         blockMonitor = BlockMonitor.getInstance();
-
+        SystemAnrMonitor.init();
     }
 
     @Override
