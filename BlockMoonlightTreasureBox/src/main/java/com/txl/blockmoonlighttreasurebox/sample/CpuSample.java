@@ -41,7 +41,7 @@ public class CpuSample extends AbsSampler{
         reset();
         BufferedReader cpuReader = null;
         BufferedReader pidReader = null;
-
+        String result = "";
         try {
             cpuReader = new BufferedReader(new InputStreamReader(
                     new FileInputStream("/proc/stat")), BUFFER_SIZE);
@@ -60,11 +60,8 @@ public class CpuSample extends AbsSampler{
                 pidCpuRate = "";
             }
 
-            String result = parse(cpuRate, pidCpuRate);
-            if(needListener && mSampleListener != null){
-                mSampleListener.onSampleEnd(msgId, result );
+            result = parse(cpuRate, pidCpuRate);
 
-            }
         } catch (Throwable throwable) {
             Log.e(TAG, "doSample: ", throwable);
         } finally {
@@ -77,6 +74,9 @@ public class CpuSample extends AbsSampler{
                 }
             } catch (IOException exception) {
                 Log.e(TAG, "doSample: ", exception);
+            }
+            if(needListener && mSampleListener != null){
+                mSampleListener.onSampleEnd(msgId, result );
             }
         }
     }

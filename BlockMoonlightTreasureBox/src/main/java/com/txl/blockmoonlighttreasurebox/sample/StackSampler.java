@@ -31,7 +31,6 @@ public class StackSampler extends AbsSampler {
         }
         if(needListener && mSampleListener != null){
             mSampleListener.onSampleEnd(msgId, new String(stringBuilder) );
-
         }
     }
 }

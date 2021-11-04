@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="300ms"
         android:background="#66CC00"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
     <!--300ms 90dp  那么每 dp 对应0.9ms  该位置反映了两个消息处理的时间间隔-->
     <TextView
         android:id="@+id/tvFixTime"

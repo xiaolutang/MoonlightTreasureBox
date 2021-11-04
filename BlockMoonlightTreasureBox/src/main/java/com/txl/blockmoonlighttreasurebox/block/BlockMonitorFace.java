@@ -13,7 +13,6 @@ public class BlockMonitorFace implements IBlock{
         this.mApplicationContext = mApplicationContext.getApplicationContext();
         BlockMonitor.getInstance().setApplicationContext(this.mApplicationContext);
         blockMonitor = BlockMonitor.getInstance();
-        SystemAnrMonitor.init();
     }
 
     @Override
@@ -52,5 +51,10 @@ public class BlockMonitorFace implements IBlock{
             }
         }
         return blockMonitorFace;
+    }
+
+    @Override
+    public void onSystemAnr() {
+        blockMonitor.onSystemAnr();
     }
 }

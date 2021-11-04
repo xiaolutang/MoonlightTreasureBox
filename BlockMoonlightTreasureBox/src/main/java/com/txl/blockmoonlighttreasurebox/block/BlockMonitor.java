@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 监控卡顿消息
  */
-public class BlockMonitor implements Printer,IBlock {
+public class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
     private final String TAG = BlockMonitor.class.getSimpleName();
     private boolean start = false;
     private Context applicationContext;
@@ -251,6 +251,24 @@ public class BlockMonitor implements Printer,IBlock {
 
     protected static BlockMonitor getInstance() {
         return BlockMonitorHolder.blockMonitor;
+    }
+
+    @Override
+    public void onSystemAnr() {
+        if(start){
+            Log.d(TAG,"onSystemAnr thread name "+Thread.currentThread().getName());
+            handleMsg();
+            messageInfo = new MessageInfo();
+            messageInfo.wallTime = SystemClock.elapsedRealtime() - Math.max(tempStartTime,lastEnd);
+            //这个时候可能在处理消息，也可能处于idle状态
+            long threadTime = Math.max(lastCpuEnd, cpuTempStartTime);
+            messageInfo.cpuTime = SystemClock.currentThreadTimeMillis() - threadTime;
+            messageInfo.msgType = MessageInfo.MSG_TYPE_ANR;
+            messageInfo.boxMessages.add( currentMsg );
+            handleMsg();
+            samplerManager.startAnrSample(monitorMsgId+"",SystemClock.elapsedRealtime());
+            samplerManager.messageQueueDispatchAnrFinish();
+        }
     }
 
 

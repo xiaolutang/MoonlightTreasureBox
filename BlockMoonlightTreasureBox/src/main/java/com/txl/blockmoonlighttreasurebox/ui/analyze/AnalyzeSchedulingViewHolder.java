@@ -29,7 +29,7 @@ public class AnalyzeSchedulingViewHolder extends RecyclerView.ViewHolder {
 
         params.width = widthPx;
         tvSchedulingDealt.setLayoutParams(params);
-//        tvMsgId.setText("msgId："+info.getMsgId());
+        tvMsgId.setText("msgId："+info.getMsgId());
     }
 
 }

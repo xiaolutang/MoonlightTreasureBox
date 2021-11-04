@@ -9,6 +9,9 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
         src/main/cpp/signal/anr_signal.cpp
         src/main/cpp/signal/jni_block_signal.cpp
+        src/main/cpp/cpoy/xcrash/common/xcc_util.c
+        src/main/cpp/cpoy/xcrash/common/xcc_libc_support.c
+        src/main/cpp/cpoy/xcrash/common/xcc_fmt.c
         )
 
 find_library( # Sets the name of the path variable.
@@ -18,7 +21,7 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
-include_directories(src/main/cpp)
+include_directories(src/main/cpp/cpoy/xcrash/common)
 
 target_link_libraries( # Specifies the target library.
                         block_signal
