@@ -2,6 +2,8 @@ package com.example.test;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tvTestAnr1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //发送消息的目的是提前让消息队列处理严重耗时任务，导致广播不能及时被接收处理
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -112,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tvTestAnr2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //发送多个不是非常严重耗时消息，模拟消息队列繁忙
                 for (int i=25;i>0;i--){
                     mainHandler.post(new Runnable() {
                         @Override
@@ -121,8 +125,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-                //如何捕获这种anr信息？
                 AnrTestBroadcast.sentBroadcast(MainActivity.this);
+            }
+        });
+        findViewById(R.id.tvTestAnr3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,AnrTestActivity.class);
+
+                startActivity(intent);
             }
         });
     }
