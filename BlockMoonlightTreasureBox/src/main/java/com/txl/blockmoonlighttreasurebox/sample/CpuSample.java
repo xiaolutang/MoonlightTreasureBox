@@ -2,6 +2,7 @@ package com.txl.blockmoonlighttreasurebox.sample;
 
 import android.util.Log;
 
+import com.txl.blockmoonlighttreasurebox.block.BlockMonitorFace;
 import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
 
 import java.io.BufferedReader;
@@ -26,6 +27,12 @@ public class CpuSample extends AbsSampler{
     private long mIoWaitLast = 0;
     private long mTotalLast = 0;
     private long mAppCpuTimeLast = 0;
+
+
+    public CpuSample() {
+//        BlockMonitorFace.getBlockMonitorFace().getApplicationContext().getSystemService("cpuinfo");
+//        ServiceManager serviceManager = new ServiceManager();
+    }
 
     private void reset() {
         mUserLast = 0;

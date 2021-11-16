@@ -26,9 +26,32 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
+//
+//adaptionAppExtension{
+//    defaultDesignWidth = 360f
+//    enableAdapter = true
+//    needToAdaptedWidth.add(400)
+//    needToAdaptedWidth.add(411)
+//    needToAdaptedWidth.add(441)
+//    needToAdaptedWidth.add(441)
+//    //   res路径，默认不用配置
+////    resPath = "${File.separator}src${File.separator}main${File.separator}res${File.separator}"
+//
+////    //针对testAutoBuildDimen 模块创建独自的配置
+////    def ex = createBuildAdaptionPluginExtension(project,adaptionAppExtension,"testAutoBuildDimen")
+////    //对模块testAutoBuildDimen sw400与默认值的转换关系为 实际值*1.0
+////    ex.conversionMap.put(400,1.0f)
+////    //对模块testAutoBuildDimen sw400与默认值的转换关系为 实际值*2.0
+////    ex.conversionMap.put(411,2.0f)
+////    //对模块testAutoBuildDimen sw400与默认值的转换关系为 实际值*3.0
+////    ex.conversionMap.put(441,3.0f)
+////    def aeasy = createBuildAdaptionPluginExtension(project,adaptionAppExtension,"aeasybuild")
+////    //aeasy  模块的默认宽度是375dp
+////    aeasy.defaultDesignWidth = 375f
+//}
 
 dependencies {
-
+    implementation 'com.github.markzhai:blockcanary-android:1.5.0'
     implementation 'com.github.getActivity:XXPermissions:12.6'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
@@ -37,5 +60,5 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    implementation 'com.github.markzhai:blockcanary-android:1.5.0'
+
 }

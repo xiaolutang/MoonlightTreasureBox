@@ -12,6 +12,7 @@ import com.txl.blockmoonlighttreasurebox.info.BoxMessage;
 import com.txl.blockmoonlighttreasurebox.info.MessageInfo;
 import com.txl.blockmoonlighttreasurebox.sample.manager.ISamplerManager;
 import com.txl.blockmoonlighttreasurebox.sample.SamplerFactory;
+import com.txl.blockmoonlighttreasurebox.ui.DisplayUtils;
 import com.txl.blockmoonlighttreasurebox.utils.BoxMessageUtils;
 import com.txl.blockmoonlighttreasurebox.utils.ReflectUtils;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 监控卡顿消息
  */
-public class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
+class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
     private final String TAG = BlockMonitor.class.getSimpleName();
     private boolean start = false;
     private Context applicationContext;
@@ -90,20 +91,22 @@ public class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
         mainHandler.post(checkThreadRunnable);
     }
 
-    public void setApplicationContext(Context applicationContext) {
+    public void init(Context applicationContext) {
         this.applicationContext = applicationContext;
+        samplerManager = SamplerFactory.createSampleManager();
+        updateConfig( new BlockBoxConfig.Builder().build() );
     }
 
     public IBlock updateConfig(BlockBoxConfig config) {
         this.config = config;
+        if(applicationContext != null)
+        DisplayUtils.showAnalyzeActivityInLauncher(applicationContext,config.isUseAnalyze());
         samplerManager.onConfigChange( config );
-//        sampleListener.onConfigChange( config );
         return this;
     }
 
     private BlockMonitor() {
-        samplerManager = SamplerFactory.createSampleManager();
-        updateConfig( new BlockBoxConfig.Builder().build() );
+
     }
 
     //调用println 是奇数次还是偶数  默认false 偶数  true 奇数

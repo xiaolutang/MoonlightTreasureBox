@@ -11,7 +11,7 @@ public class BlockMonitorFace implements IBlock{
     private BlockMonitorFace(Context mApplicationContext) {
         blockMonitorFace = this;
         this.mApplicationContext = mApplicationContext.getApplicationContext();
-        BlockMonitor.getInstance().setApplicationContext(this.mApplicationContext);
+        BlockMonitor.getInstance().init(this.mApplicationContext);
         blockMonitor = BlockMonitor.getInstance();
     }
 

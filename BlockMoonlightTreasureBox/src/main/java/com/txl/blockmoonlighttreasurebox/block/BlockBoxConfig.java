@@ -23,14 +23,13 @@ public class BlockBoxConfig {
      */
     private int jankFrame = 30;
 
-    private List<IMainThreadSampleListener> sampleListeners = new ArrayList<>();
+    private boolean useAnalyze = true;
+
+    public boolean isUseAnalyze() {
+        return useAnalyze;
+    }
 
     private List<IAnrSamplerListener> anrSamplerListeners = new ArrayList<>();
-
-
-    public List<IMainThreadSampleListener> getSampleListeners() {
-        return sampleListeners;
-    }
 
     public List<IAnrSamplerListener> getAnrSamplerListeners() {
         return anrSamplerListeners;
@@ -63,7 +62,6 @@ public class BlockBoxConfig {
             config = new BlockBoxConfig();
             FileSample fileSample = FileSample.instance;
             config.anrSamplerListeners.add( fileSample );
-            config.sampleListeners.add( fileSample );
         }
 
         public Builder setWarnTime(long warnTime) {
@@ -86,16 +84,6 @@ public class BlockBoxConfig {
             return this;
         }
 
-        public Builder addSampleListener(IMainThreadSampleListener sampleListener) {
-            config.sampleListeners.add( sampleListener );
-            return this;
-        }
-
-        public Builder addFirstSampleListener(IMainThreadSampleListener sampleListener) {
-            config.sampleListeners.add( sampleListener );
-            return this;
-        }
-
         public Builder addAnrSampleListener(IAnrSamplerListener anrSamplerListener) {
             config.anrSamplerListeners.add( anrSamplerListener );
             return this;
@@ -103,6 +91,11 @@ public class BlockBoxConfig {
 
         public Builder addFirstAnrSampleListener(IAnrSamplerListener anrSamplerListener) {
             config.anrSamplerListeners.add( anrSamplerListener );
+            return this;
+        }
+
+        public Builder useAnalyze(boolean useAnalyze){
+            config.useAnalyze = useAnalyze;
             return this;
         }
 
