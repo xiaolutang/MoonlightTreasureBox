@@ -1,6 +1,9 @@
-plugins {
-    id 'com.android.library'
+apply plugin: 'com.android.library'
+
+ext {
+    PUBLISH_ARTIFACT_ID = 'BlockMoonlightTreasureBox'
 }
+apply from: '../publish.gradle'
 
 android {
     compileSdk 28
@@ -26,10 +29,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+//    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//    }
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
