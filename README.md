@@ -37,9 +37,9 @@ SystemAnrMonitor.init(BlockMonitorFace.getBlockMonitorFace());
 
 ### BlockBoxConfig#Builder
 
-![](\picture\BlockConfigBuilder.png)
+![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/BlockConfigBuilder.png)
 
-**setWarnTime:**主线程超过这个时间就会发出警告信息，并且将主线程的消息独立出来进行聚合
+发出警告信息，并且将主线程的消息独立出来进行聚合
 
 **setGapTime:** 当主线程处于idel状态超过这个时间后，将生成一条gap信息。如果处于idel状态小于该值则不做单独处理
 
@@ -159,17 +159,17 @@ public interface ISystemAnrObserver {
 
 日志信息：
 
-![image-20211122141737373](\picture\jank日志.png)
+![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/jank%E6%97%A5%E5%BF%97.png)
 
 ## 单个消息耗时，ANR
 
 我们先给消息队列发送一个长耗时的，runnable，然后发送一个前台广播进行测试。最终我们发现产生了两条ANR记录
 
-![](\picture\两条记录.png)
+![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/%E4%B8%A4%E6%9D%A1%E8%AE%B0%E5%BD%95.png)
 
 原因是消息队列的处理某个消息的时候，我们自己先发现ANR  接着、月光宝盒或者是系统触发了ANR结束消息。因为这个结束有两次触发，因此产生了两条消息。
 
-![](\picture\单个消息耗时分析.jpg)
+![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/%E5%8D%95%E4%B8%AA%E6%B6%88%E6%81%AF%E8%80%97%E6%97%B6%E5%88%86%E6%9E%90.jpg)
 
 可以看到，发生anr是当前处理消息耗时 wallTime = 10727ms  通过android.os.Hander的实例对象进行消息发送，其中callback为MainActivity中的内部类，消息队列中还有两个消息等待处理，耗时堆栈命中Thread.sleep  
 
@@ -200,7 +200,7 @@ findViewById(R.id.tvTestAnr2).setOnClickListener(new View.OnClickListener() {
 
 结果分析：
 
-![](\picture\单个不耗时多个耗时.jpg)
+![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/%E5%8D%95%E4%B8%AA%E4%B8%8D%E8%80%97%E6%97%B6%E5%A4%9A%E4%B8%AA%E8%80%97%E6%97%B6.jpg)
 
 这个也就反应了，很多时候可能命名我们没有进行耗时操作，但是从系统侧却发生了ANR。
 
@@ -215,6 +215,8 @@ findViewById(R.id.tvTestAnr2).setOnClickListener(new View.OnClickListener() {
 # 技术交流群：
 
 ![](\picture\MoonlightTreasureBox技术交流群二维码.png)
+
+![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/MoonlightTreasureBox%E6%8A%80%E6%9C%AF%E4%BA%A4%E6%B5%81%E7%BE%A4%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
 
 
 
