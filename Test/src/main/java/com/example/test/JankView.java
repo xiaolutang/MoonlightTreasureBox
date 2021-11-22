@@ -28,7 +28,7 @@ public class JankView extends androidx.appcompat.widget.AppCompatTextView {
         super.draw(canvas);
         long start = SystemClock.elapsedRealtime();
         if(jank){
-            SystemClock.sleep(1000);
+            SystemClock.sleep(500);
         }
         long end = SystemClock.elapsedRealtime();
         Log.d("JankView","BlockMonitor start "+start + "  end "+end + "   "+(end - start));
