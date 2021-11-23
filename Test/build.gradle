@@ -55,7 +55,8 @@ dependencies {
     implementation 'com.github.getActivity:XXPermissions:12.6'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation project(path: ':BlockMoonlightTreasureBox')
+//    implementation project(path: ':BlockMoonlightTreasureBox')
+    implementation 'io.github.xiaolutang:BlockMoonlightTreasureBox:1.0.0'
     implementation 'com.google.android.material:material:1.4.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

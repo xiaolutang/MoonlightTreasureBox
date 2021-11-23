@@ -11,9 +11,23 @@
 
 终于迎来了最后一期版本发布
 
+
+
+技术理论源自于：
+
+[今日头条 ANR 优化实践系列 - 设计原理及影响因素](https://juejin.cn/post/6940061649348853796)
+
+[今日头条 ANR 优化实践系列 - 监控工具与分析思路](https://juejin.cn/post/6942665216781975582#heading-16)
+
+
+
 # 使用
 
 引入：
+
+```gradle
+implementation 'io.github.xiaolutang:BlockMoonlightTreasureBox:1.0.0'
+```
 
 
 
@@ -202,7 +216,7 @@ findViewById(R.id.tvTestAnr2).setOnClickListener(new View.OnClickListener() {
 
 ![](https://github.com/xiaolutang/MoonlightTreasureBox/blob/main/picture/%E5%8D%95%E4%B8%AA%E4%B8%8D%E8%80%97%E6%97%B6%E5%A4%9A%E4%B8%AA%E8%80%97%E6%97%B6.jpg)
 
-这个也就反应了，很多时候可能命名我们没有进行耗时操作，但是从系统侧却发生了ANR。
+这个也就反应了，很多时候可能明明我们没有进行耗时操作，但是从系统侧却发生了ANR。
 
 ## 其它线程或者进程抢占CPU,导致主线程调度能力不足
 
