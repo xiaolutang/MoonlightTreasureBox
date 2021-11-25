@@ -1,10 +1,10 @@
 package com.txl.blockmoonlighttreasurebox.ui;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DisplayActivity extends AppCompatActivity {
+public class DisplayActivity extends Activity {
     private final AtomicBoolean refresh = new AtomicBoolean(false);
     private final FileAdapter adapter = new FileAdapter();
     SwipeRefreshLayout swipeRefreshLayout;

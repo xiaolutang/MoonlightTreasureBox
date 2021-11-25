@@ -1,10 +1,10 @@
 package com.txl.blockmoonlighttreasurebox.ui.analyze;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.txl.blockmoonlighttreasurebox.R;
 import com.txl.blockmoonlighttreasurebox.info.AnrInfo;
@@ -14,7 +14,7 @@ import com.txl.blockmoonlighttreasurebox.ui.AnalyzeProtocol;
 /**
  * 分析每一个anr消息
  * */
-public class AnalyzeActivity extends AppCompatActivity {
+public class AnalyzeActivity extends Activity {
     private final AnalyzeSchedulingAdapter analyzeSchedulingAdapter = new AnalyzeSchedulingAdapter();
 
     @Override
