@@ -37,7 +37,7 @@ public class MessageInfo implements Serializable {
     /**
      * 至少有一条消息
      * */
-    public int count = 1;
+    public int count = 0;
     /**
      * 消息分发耗时
      * */

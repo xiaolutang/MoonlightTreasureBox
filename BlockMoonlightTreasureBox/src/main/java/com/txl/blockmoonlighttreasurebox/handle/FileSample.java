@@ -103,6 +103,11 @@ public class FileSample implements IAnrSamplerListener {
                 Log.e(TAG,"error continuous gap");
             }
             anrInfo.messageSamplerCache.put( baseTime,msg );
+//            long mmsgId = 0L;
+//            if (msg.boxMessages != null && msg.boxMessages.size() != 0){
+//                mmsgId = msg.boxMessages.get(0).getMsgId();
+//            }
+//            Log.d(TAG,"baseTime : "+baseTime+"  wallTime : "+msg.wallTime +"  cpuTime "+msg.cpuTime+"   MSG_TYPE : "+MessageInfo.msgTypeToString(msg.msgType)+"  msgId "+mmsgId);
         }
     }
 

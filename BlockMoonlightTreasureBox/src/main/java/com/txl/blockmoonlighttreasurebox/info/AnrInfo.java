@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class AnrInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final long OFFSET_TIME = 60 * 1000; //1分钟
-    public TimeLruCache<MessageInfo> messageSamplerCache = new TimeLruCache<>();
+    public TimeLruCache<MessageInfo> messageSamplerCache = new TimeLruCache<>(30L *1000*1000_000);
     public TimeLruCache<ScheduledInfo> scheduledSamplerCache = new TimeLruCache<>();
     public StringBuilder messageQueueSample = new StringBuilder();
     public String mainThreadStack;

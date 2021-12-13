@@ -31,6 +31,9 @@ public class TimeLruCache<V> implements Serializable {
 
 
 
+    /**
+     * 当最后一个和第一个时间偏差超过该值的时候，会将LinkedHashMap 中链表表头的元素移除
+     * */
     public TimeLruCache(long offsetTime) {
         this.offsetTime = offsetTime;
     }

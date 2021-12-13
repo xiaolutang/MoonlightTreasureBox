@@ -187,7 +187,7 @@ class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
                 }
             } else {
                 //统计每一次消息分发耗时 他们的叠加就是总耗时
-                messageInfo.wallTime = lastEnd - startTime;
+                messageInfo.wallTime += lastEnd - startTime;
                 //生成消息的时候，当前线程总的执行时间
                 messageInfo.cpuTime += lastCpuEnd - cpuTempStartTime;
                 messageInfo.boxMessages.add( currentMsg );
@@ -247,7 +247,14 @@ class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
 
     private void handleMsg() {
         if (messageInfo != null) {
-            samplerManager.onMsgSample( startTime,monitorMsgId+"",messageInfo );
+            MessageInfo temp = messageInfo;
+            messageInfo = null;
+//            long msgId = 0L;
+//            if (temp.boxMessages != null && temp.boxMessages.size() != 0){
+//                msgId = temp.boxMessages.get(0).getMsgId();
+//            }
+//            Log.d(TAG,"add msg wallTime other wallTime : "+temp.wallTime +"  cpuTime "+temp.cpuTime+"   MSG_TYPE : "+MessageInfo.msgTypeToString(temp.msgType)+"  msgId "+msgId);
+//            samplerManager.onMsgSample( SystemClock.elapsedRealtimeNanos(),monitorMsgId+"",temp );
         }
         messageInfo = null;
     }
