@@ -249,11 +249,11 @@ class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
         if (messageInfo != null) {
             MessageInfo temp = messageInfo;
             messageInfo = null;
-//            long msgId = 0L;
-//            if (temp.boxMessages != null && temp.boxMessages.size() != 0){
-//                msgId = temp.boxMessages.get(0).getMsgId();
-//            }
-//            Log.d(TAG,"add msg wallTime other wallTime : "+temp.wallTime +"  cpuTime "+temp.cpuTime+"   MSG_TYPE : "+MessageInfo.msgTypeToString(temp.msgType)+"  msgId "+msgId);
+            long msgId = 0L;
+            if (temp.boxMessages != null && temp.boxMessages.size() != 0){
+                msgId = temp.boxMessages.get(0).getMsgId();
+            }
+            Log.d(TAG,"add msg wallTime other wallTime : "+temp.wallTime +"  cpuTime "+temp.cpuTime+"   MSG_TYPE : "+MessageInfo.msgTypeToString(temp.msgType)+"  msgId "+msgId);
             samplerManager.onMsgSample( SystemClock.elapsedRealtimeNanos(),monitorMsgId+"",temp );
         }
         messageInfo = null;
@@ -267,7 +267,9 @@ class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
     public void onSystemAnr() {
         if(start){
             Log.d(TAG,"onSystemAnr thread name "+Thread.currentThread().getName());
-            handleMsg();
+            if(messageInfo.count > 1){
+                handleMsg();
+            }
             messageInfo = new MessageInfo();
             messageInfo.wallTime = SystemClock.elapsedRealtime() - Math.max(tempStartTime,lastEnd);
             //这个时候可能在处理消息，也可能处于idle状态
