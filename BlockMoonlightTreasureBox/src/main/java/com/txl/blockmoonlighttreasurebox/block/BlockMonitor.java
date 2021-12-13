@@ -254,7 +254,7 @@ class BlockMonitor implements Printer,IBlock, ISystemAnrObserver {
 //                msgId = temp.boxMessages.get(0).getMsgId();
 //            }
 //            Log.d(TAG,"add msg wallTime other wallTime : "+temp.wallTime +"  cpuTime "+temp.cpuTime+"   MSG_TYPE : "+MessageInfo.msgTypeToString(temp.msgType)+"  msgId "+msgId);
-//            samplerManager.onMsgSample( SystemClock.elapsedRealtimeNanos(),monitorMsgId+"",temp );
+            samplerManager.onMsgSample( SystemClock.elapsedRealtimeNanos(),monitorMsgId+"",temp );
         }
         messageInfo = null;
     }

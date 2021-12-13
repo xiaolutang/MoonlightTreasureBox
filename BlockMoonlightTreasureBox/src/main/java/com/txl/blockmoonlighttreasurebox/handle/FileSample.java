@@ -126,9 +126,14 @@ public class FileSample implements IAnrSamplerListener {
     public void messageQueueDispatchAnrFinish() {
         AnrInfo temp = anrInfo;
         anrInfo = new AnrInfo();
+        String path = FileCache.sFormat.format(new Date());
+        if(TextUtils.isEmpty(temp.markTime)){
+            temp.markTime = path;
+        }
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG,"messageQueueDispatchAnrFinish cacheData schedule size "+temp.scheduledSamplerCache.getAll().size()+"  file name : "+temp.markTime);
                 fileCache.cacheData(temp.markTime,temp);
             }
         });
