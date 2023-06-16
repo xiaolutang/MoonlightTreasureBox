@@ -47,17 +47,22 @@ public class FileSample implements IAnrSamplerListener {
 
 
     private FileSample() {
-        fileCache.init(BlockMonitorFace.getBlockMonitorFace().getApplicationContext(),"block_anr",10,"1.0.0");
+        fileCache.init(BlockMonitorFace.getBlockMonitorFace().getApplicationContext(), "block_anr", 10, "1.0.0");
     }
 
     @Override
     public void onMessageQueueSample(long baseTime, String msgId, String msg) {
-        anrInfo.messageQueueSample.append( msg );
+        anrInfo.messageQueueSample.append(msg);
     }
 
     @Override
     public void onCpuSample(long baseTime, String msgId, String msg) {
+        anrInfo.cpuInfo = msg;
+    }
 
+    @Override
+    public void onSystemLoadSample(long baseTime, String msgId, String msg) {
+        anrInfo.systemLoad = msg;
     }
 
     @Override
@@ -71,18 +76,18 @@ public class FileSample implements IAnrSamplerListener {
 
     @Override
     public void onSampleAnrMsg() {
-        synchronized (this){
+        synchronized (this) {
             AnrInfo temp = anrInfo;
             String path = FileCache.sFormat.format(new Date());
-            if(TextUtils.isEmpty(temp.markTime)){
+            if (TextUtils.isEmpty(temp.markTime)) {
                 temp.markTime = path;
             }
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
 
-                    Log.d(TAG,"cacheData schedule size "+temp.scheduledSamplerCache.getAll().size()+"  file name : "+temp.markTime);
-                    fileCache.cacheData(temp.markTime,temp);
+                    Log.d(TAG, "cacheData schedule size " + temp.scheduledSamplerCache.getAll().size() + "  file name : " + temp.markTime);
+                    fileCache.cacheData(temp.markTime, temp);
                     //通知可以展示ui
                 }
             });
@@ -90,19 +95,19 @@ public class FileSample implements IAnrSamplerListener {
     }
 
     @Override
-    public void onScheduledSample(boolean start,long baseTime, String msgId, long dealt) {
-        synchronized (this){
-            anrInfo.scheduledSamplerCache.put( baseTime,new ScheduledInfo( dealt,msgId ,start) );
+    public void onScheduledSample(boolean start, long baseTime, String msgId, long dealt) {
+        synchronized (this) {
+            anrInfo.scheduledSamplerCache.put(baseTime, new ScheduledInfo(dealt, msgId, start));
         }
     }
 
     @Override
     public void onMsgSample(long baseTime, String msgId, MessageInfo msg) {
-        synchronized (this){
-            if(msg.msgType == MessageInfo.MSG_TYPE_GAP && anrInfo.messageSamplerCache.getLastValue().msgType == MessageInfo.MSG_TYPE_GAP){
-                Log.e(TAG,"error continuous gap");
+        synchronized (this) {
+            if (msg.msgType == MessageInfo.MSG_TYPE_GAP && anrInfo.messageSamplerCache.getLastValue().msgType == MessageInfo.MSG_TYPE_GAP) {
+                Log.e(TAG, "error continuous gap");
             }
-            anrInfo.messageSamplerCache.put( baseTime,msg );
+            anrInfo.messageSamplerCache.put(baseTime, msg);
 //            long mmsgId = 0L;
 //            if (msg.boxMessages != null && msg.boxMessages.size() != 0){
 //                mmsgId = msg.boxMessages.get(0).getMsgId();
@@ -114,12 +119,12 @@ public class FileSample implements IAnrSamplerListener {
     @Override
     public void onJankSample(String msgId, MessageInfo msg) {
         StringBuilder builder = new StringBuilder();
-        builder.append( "onJankSample" )
-                .append( " msgId : " )
-                .append( msgId )
-                .append( "  msg : " )
-                .append( msg );
-        Log.d( TAG,new String(builder) );
+        builder.append("onJankSample")
+                .append(" msgId : ")
+                .append(msgId)
+                .append("  msg : ")
+                .append(msg);
+        Log.d(TAG, new String(builder));
     }
 
     @Override
@@ -127,14 +132,14 @@ public class FileSample implements IAnrSamplerListener {
         AnrInfo temp = anrInfo;
         anrInfo = new AnrInfo();
         String path = FileCache.sFormat.format(new Date());
-        if(TextUtils.isEmpty(temp.markTime)){
+        if (TextUtils.isEmpty(temp.markTime)) {
             temp.markTime = path;
         }
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG,"messageQueueDispatchAnrFinish cacheData schedule size "+temp.scheduledSamplerCache.getAll().size()+"  file name : "+temp.markTime);
-                fileCache.cacheData(temp.markTime,temp);
+                Log.d(TAG, "messageQueueDispatchAnrFinish cacheData schedule size " + temp.scheduledSamplerCache.getAll().size() + "  file name : " + temp.markTime);
+                fileCache.cacheData(temp.markTime, temp);
             }
         });
 
@@ -147,7 +152,7 @@ public class FileSample implements IAnrSamplerListener {
 
         /**
          * 指定目录下最多能够存储多少个文件
-         * */
+         */
         private int maxSize = 20;
         private int currentSize;
         private static final SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
@@ -155,92 +160,92 @@ public class FileSample implements IAnrSamplerListener {
         private FileCache() {
         }
 
-        private File getDiskCacheDir(Context context, String uniqueName){
-            boolean externalStorageAvailable = Environment.getExternalStorageState().equals( Environment.MEDIA_MOUNTED );
+        private File getDiskCacheDir(Context context, String uniqueName) {
+            boolean externalStorageAvailable = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
             final String cachePath;
-            if(externalStorageAvailable){
+            if (externalStorageAvailable) {
                 cachePath = context.getExternalCacheDir().getPath();
-            }else {
+            } else {
                 cachePath = context.getCacheDir().getPath();
             }
-            return new File( cachePath+File.separator+uniqueName );
+            return new File(cachePath + File.separator + uniqueName);
         }
 
 
-        public void init(Context context, String rootDir, int maxSize, String appVersion){
-            if(maxSize > 2){
+        public void init(Context context, String rootDir, int maxSize, String appVersion) {
+            if (maxSize > 2) {
                 this.maxSize = maxSize;
             }
-            SharedPreferences sp = context.getSharedPreferences("moonlight_anr",Context.MODE_PRIVATE);
-            String lastVersion = sp.getString(LAST_VERSION,"");
-            sp.edit().putString(LAST_VERSION,appVersion)
+            SharedPreferences sp = context.getSharedPreferences("moonlight_anr", Context.MODE_PRIVATE);
+            String lastVersion = sp.getString(LAST_VERSION, "");
+            sp.edit().putString(LAST_VERSION, appVersion)
                     .apply();
             diskCacheDir = getDiskCacheDir(context, rootDir);
-            if(diskCacheDir.exists() && !appVersion.equals(lastVersion)){//版本不一致删除
+            if (diskCacheDir.exists() && !appVersion.equals(lastVersion)) {//版本不一致删除
                 FileUtils.deleteFile(diskCacheDir);
             }
-            if(!diskCacheDir.exists()){
+            if (!diskCacheDir.exists()) {
                 diskCacheDir.mkdirs();
             }
-            Log.d(TAG,"cache path : "+diskCacheDir.getPath());
+            Log.d(TAG, "cache path : " + diskCacheDir.getPath());
             File[] files = diskCacheDir.listFiles();
             currentSize = files == null ? 0 : files.length;
             long m = getUsableSpace(diskCacheDir);
         }
 
-        public synchronized void cacheData(String path, T serializable){
+        public synchronized void cacheData(String path, T serializable) {
 //如果文件不存在就创建文件
-            File file=new File(diskCacheDir.getPath()+ File.separator+path);
+            File file = new File(diskCacheDir.getPath() + File.separator + path);
             //file.createNewFile();
             //获取输出流
             //这里如果文件不存在会创建文件，  如果文件存在，新写会覆盖以前的内容吗？
             ObjectOutputStream fos = null;
             try {
-                fos=new ObjectOutputStream(new FileOutputStream(file));
+                fos = new ObjectOutputStream(new FileOutputStream(file));
                 fos.writeObject(serializable);
             } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 FileUtils.closeStream(fos);
             }
             currentSize = diskCacheDir.listFiles() == null ? 0 : diskCacheDir.listFiles().length;
-            if(currentSize>maxSize){
+            if (currentSize > maxSize) {
                 removeLastFile();
             }
         }
 
-        private synchronized void removeLastFile(){
+        private synchronized void removeLastFile() {
             File[] files = diskCacheDir.listFiles();
             Arrays.sort(files, new Comparator<File>() {
                 @Override
                 public int compare(File o1, File o2) {
-                    return o1.getName().compareTo(o2.getName()) ;
+                    return o1.getName().compareTo(o2.getName());
                 }
             });
             //把最小的移除掉
-            Log.d(TAG,"removeLastFile file name: "+files[0].getName());
+            Log.d(TAG, "removeLastFile file name: " + files[0].getName());
             FileUtils.deleteFile(files[0]);
         }
 
-        public  synchronized List<T>  restoreData(){
+        public synchronized List<T> restoreData() {
             List<T> result = new ArrayList<>();
             File[] files = diskCacheDir.listFiles();
-            if(files == null){
+            if (files == null) {
                 return result;
             }
-            for (File file:files){
-                ObjectInputStream ois=null;
+            for (File file : files) {
+                ObjectInputStream ois = null;
                 try {
                     //获取输入流
-                    ois=new ObjectInputStream(new FileInputStream(file));
+                    ois = new ObjectInputStream(new FileInputStream(file));
                     //获取文件中的数据
-                    T data= (T) ois.readObject();
+                    T data = (T) ois.readObject();
                     result.add(data);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }finally{
+                } finally {
                     try {
-                        if (ois!=null) {
+                        if (ois != null) {
                             ois.close();
                         }
                     } catch (IOException e) {
@@ -252,11 +257,11 @@ public class FileSample implements IAnrSamplerListener {
         }
 
 
-        private long getUsableSpace(File path){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD){
+        private long getUsableSpace(File path) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
                 return path.getUsableSpace();
             }
-            final StatFs statFs = new StatFs( path.getPath() );
+            final StatFs statFs = new StatFs(path.getPath());
             return statFs.getBlockSizeLong() + statFs.getAvailableBlocksLong();
         }
     }

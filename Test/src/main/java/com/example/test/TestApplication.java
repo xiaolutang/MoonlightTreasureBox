@@ -12,6 +12,7 @@ import com.txl.blockmoonlighttreasurebox.block.BlockBoxConfig;
 import com.txl.blockmoonlighttreasurebox.block.BlockMonitorFace;
 import com.txl.blockmoonlighttreasurebox.block.SystemAnrMonitor;
 
+
 public class TestApplication extends Application {
     private final String TAG = TestApplication.class.getSimpleName();
     @Override
@@ -26,7 +27,7 @@ public class TestApplication extends Application {
                 processName = process.processName;
             }
         }
-        if(processName.equals(getPackageName())){
+        if(processName.equals(getPackageName())) {
             Log.d(TAG,"init BlockMonitor");
             BlockMonitorFace.init(this)
                     .updateConfig(new BlockBoxConfig.Builder()
@@ -38,6 +39,5 @@ public class TestApplication extends Application {
 
 
 //        BlockCanary.install(TestApplication.this, new BlockCanaryContext()).start();
-
     }
 }

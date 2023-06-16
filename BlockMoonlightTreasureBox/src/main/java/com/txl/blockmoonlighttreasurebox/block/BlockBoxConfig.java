@@ -60,8 +60,9 @@ public class BlockBoxConfig {
         private final BlockBoxConfig config;
         public Builder(){
             config = new BlockBoxConfig();
+            // 默认是离线存储
             FileSample fileSample = FileSample.instance;
-            config.anrSamplerListeners.add( fileSample );
+            config.anrSamplerListeners.add(fileSample);
         }
 
         public Builder setWarnTime(long warnTime) {

@@ -16,6 +16,7 @@
             android:enabled="true"
             android:icon="@drawable/icon_block"
             android:label="@string/block_moon_light_treasure_box"
+            android:exported="true"
             android:taskAffinity="com.txl.blockmoonlighttreasurebox">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

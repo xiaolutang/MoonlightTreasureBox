@@ -1,10 +1,8 @@
 package com.txl.blockmoonlighttreasurebox.sample;
 
+import android.os.Build;
+import android.text.TextUtils;
 import android.util.Log;
-
-import com.txl.blockmoonlighttreasurebox.block.BlockMonitorFace;
-import com.txl.blockmoonlighttreasurebox.utils.AppExecutors;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +15,7 @@ import java.util.Map;
  * date：2021/10/16
  * description：
  */
-public class CpuSample extends AbsSampler{
+public class CpuSample extends AbsSampler {
     private static final int BUFFER_SIZE = 1024;
 
     private int mPid = 0;
@@ -46,12 +44,22 @@ public class CpuSample extends AbsSampler{
     @Override
     protected void doSample(String msgId, boolean needListener) {
         reset();
+
         BufferedReader cpuReader = null;
         BufferedReader pidReader = null;
+        Process process = null;
         String result = "";
         try {
-            cpuReader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream("/proc/stat")), BUFFER_SIZE);
+
+            // 8.0以上使用top命令获取13669695036
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                process = Runtime.getRuntime().exec("top -n 1");
+                cpuReader = new BufferedReader(new InputStreamReader(process.getInputStream()), BUFFER_SIZE);
+            } else {
+                cpuReader = new BufferedReader(new InputStreamReader(
+                        new FileInputStream("/proc/stat")), BUFFER_SIZE);
+            }
+
             String cpuRate = cpuReader.readLine();
             if (cpuRate == null) {
                 cpuRate = "";
@@ -67,10 +75,30 @@ public class CpuSample extends AbsSampler{
                 pidCpuRate = "";
             }
 
-            result = parse(cpuRate, pidCpuRate);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                String line;
+                StringBuilder stringBuilder = new StringBuilder();
+                Log.d(TAG, "doSample: top line start-------------------");
+                while ((line = cpuReader.readLine()) != null) {
+                    if (TextUtils.isEmpty(line)) {
+                        continue;
+                    }
+                    Log.d(TAG, line);
+                    stringBuilder.append(line);
+                    stringBuilder.append('\n');
+                    if (line.contains("TOTAL")) {
+                        // 只到包含TOTAL那行
+                        break;
+                    }
+                }
+                Log.d(TAG, "doSample: top line end-----------------");
+                result = stringBuilder.toString();
+            } else {
+                result = parse(cpuRate, pidCpuRate);
+            }
 
         } catch (Throwable throwable) {
-            Log.e(TAG, "doSample: ", throwable);
+            Log.e(TAG, "error in cpu sample's doSample: ", throwable);
         } finally {
             try {
                 if (cpuReader != null) {
@@ -79,11 +107,15 @@ public class CpuSample extends AbsSampler{
                 if (pidReader != null) {
                     pidReader.close();
                 }
+
+                if (process != null) {
+                    process.destroy();
+                }
             } catch (IOException exception) {
-                Log.e(TAG, "doSample: ", exception);
+                Log.e(TAG, "error in cpu sample's finally: ", exception);
             }
-            if(needListener && mSampleListener != null){
-                mSampleListener.onSampleEnd(msgId, result );
+            if (needListener && mSampleListener != null) {
+                mSampleListener.onSampleEnd(msgId, result);
             }
         }
     }
@@ -142,4 +174,8 @@ public class CpuSample extends AbsSampler{
         mAppCpuTimeLast = appCpuTime;
         return new String(stringBuilder);
     }
+
+//    private String parseO() {
+//
+//    }
 }
