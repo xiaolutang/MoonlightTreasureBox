@@ -14,4 +14,12 @@ public interface IAnrSamplerListener extends IMainThreadSampleListener {
     void onMemorySample(long baseTime, String msgId, String msg);
 
     void onMainThreadStackSample(long baseTime, String msgId, String msg);
+
+    /**
+     * 系统负载
+     * @param baseTime
+     * @param msgId
+     * @param msg
+     */
+    void onSystemLoadSample(long baseTime, String msgId, String msg);
 }

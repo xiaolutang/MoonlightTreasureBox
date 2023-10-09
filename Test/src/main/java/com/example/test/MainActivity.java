@@ -27,18 +27,19 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             TextView textView = findViewById(R.id.tv_text);
-            textView.setText("我是：  "+num++);
+            textView.setText("我是：  " + num++);
 //            textView.postDelayed(this,2500);
 
             int i = 1;
-            while (i < 500_000_000){
+            while (i < 500_000_000) {
                 i++;
             }
-            textView.postDelayed(this,16);
+            textView.postDelayed(this, 16);
         }
     };
 
     int num = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,17 +51,17 @@ public class MainActivity extends Activity {
                     @Override
                     public void onGranted(List<String> permissions, boolean all) {
                         if (!all) {
-                            Toast.makeText(MainActivity.this,"获取部分权限成功，但部分权限未正常授予",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "获取部分权限成功，但部分权限未正常授予", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onDenied(List<String> permissions, boolean never) {
                         if (never) {
-                            Toast.makeText(MainActivity.this,"被永久拒绝授权，请手动授予文件读写权限权限",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "被永久拒绝授权，请手动授予文件读写权限权限", Toast.LENGTH_SHORT).show();
                             // 如果是被永久拒绝就跳转到应用权限系统设置页
                         } else {
-                            Toast.makeText(MainActivity.this,"获取文件读写权限失败",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "获取文件读写权限失败", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -112,7 +113,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //发送多个不是非常严重耗时消息，模拟消息队列繁忙
-                for (int i=25;i>0;i--){
+                for (int i = 25; i > 0; i--) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -127,7 +128,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.tvTestAnr3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,AnrTestActivity.class);
+                Intent intent = new Intent(MainActivity.this, AnrTestActivity.class);
 
                 startActivity(intent);
             }
@@ -140,11 +141,11 @@ public class MainActivity extends Activity {
         unregisterReceiver(anrTestBroadcast);
     }
 
-    private void consumeCpu(){
+    private void consumeCpu() {
         int i = 1;
-        while (i<50){
+        while (i < 50) {
             int j = 1;
-            while (j < 500_000_000){
+            while (j < 500_000_000) {
                 j++;
             }
             i++;
@@ -159,27 +160,27 @@ public class MainActivity extends Activity {
 
     Object object = new Object();
 
-    private void testThreadTime(){
+    private void testThreadTime() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 long time1 = SystemClock.currentThreadTimeMillis();
                 int i = 0;
-                while (i < 1000000000){
+                while (i < 1000000000) {
                     i++;
                 }
                 long time2 = SystemClock.currentThreadTimeMillis();
-                Log.d(TAG,"thread2 time1 : "+time1+"  time2 : "+time2 + " dealt : "+(time2 - time1));
+                Log.d(TAG, "thread2 time1 : " + time1 + "  time2 : " + time2 + " dealt : " + (time2 - time1));
             }
-        },"thread2").start();
+        }, "thread2").start();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 long time1 = SystemClock.currentThreadTimeMillis();
-                Log.d(TAG,"thread1 time1 : start "+time1);
+                Log.d(TAG, "thread1 time1 : start " + time1);
                 try {
-                    synchronized (object){
+                    synchronized (object) {
                         Thread.sleep(3000);
                         SystemClock.sleep(3000);
                     }
@@ -187,21 +188,21 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
                 long time2 = SystemClock.currentThreadTimeMillis();
-                Log.d(TAG,"thread1 time1 : "+time1+"  time2 : "+time2 + " dealt : "+(time2 - time1));
+                Log.d(TAG, "thread1 time1 : " + time1 + "  time2 : " + time2 + " dealt : " + (time2 - time1));
             }
-        },"thread1").start();
+        }, "thread1").start();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 long time1 = SystemClock.currentThreadTimeMillis();
-                Log.d(TAG,"thread3 time1 : start "+time1);
-                synchronized (object){
-                    Log.d(TAG,"get object");
+                Log.d(TAG, "thread3 time1 : start " + time1);
+                synchronized (object) {
+                    Log.d(TAG, "get object");
                 }
                 long time2 = SystemClock.currentThreadTimeMillis();
-                Log.d(TAG,"thread3 time1 : "+time1+"  time2 : "+time2 + " dealt : "+(time2 - time1));
+                Log.d(TAG, "thread3 time1 : " + time1 + "  time2 : " + time2 + " dealt : " + (time2 - time1));
             }
-        },"thread3").start();
+        }, "thread3").start();
     }
 }

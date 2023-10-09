@@ -93,7 +93,36 @@
                 android:text="主线程函数栈调用情况："
                 android:layout_marginTop="@dimen/dp_10"/>
             <!--cpu 使用情况-->
+            <TextView
+                android:id="@+id/tvNameCpu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tvNameMainThreadStackInfo"
+                android:text="cpu使用用情况："
+                android:layout_marginTop="@dimen/dp_10"/>
+            <TextView
+                android:id="@+id/tvNameCpuInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tvNameCpu"
+                android:text="cpu使用用情况："
+                android:layout_marginTop="@dimen/dp_10"/>
             <!--内存使用情况-->
+            <!--     系统进程负载       -->
+            <TextView
+                android:id="@+id/tvNameLoad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tvNameCpuInfo"
+                android:text="系统进程负载："
+                android:layout_marginTop="@dimen/dp_10"/>
+            <TextView
+                android:id="@+id/tvNameLoadInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tvNameLoad"
+                android:text="情况："
+                android:layout_marginTop="@dimen/dp_10"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

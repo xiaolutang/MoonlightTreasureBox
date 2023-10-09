@@ -15,4 +15,8 @@ public class AnrInfo implements Serializable {
     public StringBuilder messageQueueSample = new StringBuilder();
     public String mainThreadStack;
     public String markTime;
+
+    public String cpuInfo;
+
+    public String systemLoad;
 }

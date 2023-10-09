@@ -21,16 +21,16 @@ public class StackSampler extends AbsSampler {
     @Override
     protected void doSample(String msgId, boolean needListener) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append( "msgId: " )
-                .append( msgId )
-                .append( BoxMessage.SEPARATOR );
+        stringBuilder.append("msgId: ")
+                .append(msgId)
+                .append(BoxMessage.SEPARATOR);
         for (StackTraceElement stackTraceElement : mSampleThread.getStackTrace()) {
             stringBuilder
                     .append(stackTraceElement.toString())
-                    .append( BoxMessage.SEPARATOR);
+                    .append(BoxMessage.SEPARATOR);
         }
-        if(needListener && mSampleListener != null){
-            mSampleListener.onSampleEnd(msgId, new String(stringBuilder) );
+        if (needListener && mSampleListener != null) {
+            mSampleListener.onSampleEnd(msgId, new String(stringBuilder));
         }
     }
 }

@@ -38,7 +38,6 @@ static void xc_trace_handler(int sig, siginfo_t *si, void *uc)
 }
 
 
-
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_txl_blockmoonlighttreasurebox_block_SystemAnrMonitor_hookSignalCatcher(JNIEnv *env,
@@ -50,16 +49,7 @@ Java_com_txl_blockmoonlighttreasurebox_block_SystemAnrMonitor_hookSignalCatcher(
         system_anr_observed = env->NewGlobalRef(observed);
         block_anr_signal_trace_register(xc_trace_handler);
     }
-
-
 }
-
-
-
-
-
-
-
 
 
 extern "C"
@@ -71,6 +61,4 @@ Java_com_txl_blockmoonlighttreasurebox_block_SystemAnrMonitor_unHookSignalCatche
         is_registered = false;
         block_anr_signal_trace_unregister();
     }
-
-
 }

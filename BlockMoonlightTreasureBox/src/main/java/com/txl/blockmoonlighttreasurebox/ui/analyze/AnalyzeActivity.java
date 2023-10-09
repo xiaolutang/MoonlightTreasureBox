@@ -33,6 +33,8 @@ public class AnalyzeActivity extends Activity {
         TextView tvNameMessageQueueDispatchItemInfo = findViewById(R.id.tvNameMessageQueueDispatchItemInfo);
         TextView tvNameMessageQueueInfo = findViewById(R.id.tvNameMessageQueueInfo);
         TextView tvNameMainThreadStackInfo = findViewById(R.id.tvNameMainThreadStackInfo);
+        TextView tvNameCpuInfo = findViewById(R.id.tvNameCpuInfo);
+        TextView tvNameLoadInfo = findViewById(R.id.tvNameLoadInfo);
         AnrInfo anrInfo = AnalyzeProtocol.anrInfo;
         analyzeMessageDispatchAdapter.setOnItemClickListener(new AnalyzeMessageDispatchAdapter.OnItemClickListener() {
             @Override
@@ -43,6 +45,8 @@ public class AnalyzeActivity extends Activity {
 
         tvNameMessageQueueInfo.setText(new String(anrInfo.messageQueueSample));
         tvNameMainThreadStackInfo.setText(anrInfo.mainThreadStack);
+        tvNameCpuInfo.setText(anrInfo.cpuInfo);
+        tvNameLoadInfo.setText(anrInfo.systemLoad);
         analyzeSchedulingAdapter.scheduledInfos = anrInfo.scheduledSamplerCache.getAll();
         analyzeSchedulingAdapter.notifyDataSetChanged();
         analyzeMessageDispatchAdapter.messageInfos = anrInfo.messageSamplerCache.getAll();

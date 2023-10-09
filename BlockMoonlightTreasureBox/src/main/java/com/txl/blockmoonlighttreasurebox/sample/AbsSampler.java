@@ -15,29 +15,29 @@ public abstract class AbsSampler {
     protected SampleListener mSampleListener;
     /**
      * 是否可以进行采样
-     * */
+     */
     protected AtomicBoolean mShouldSample = new AtomicBoolean(true);
 
     /**
      * 进行采样
-     * */
+     */
     protected abstract void doSample(String msgId, boolean needListener);
 
     public void setSampleListener(SampleListener mSampleListener) {
         this.mSampleListener = mSampleListener;
     }
 
-    public void startSample(String msgId, boolean needListener){
-        if(!mShouldSample.get()){
-            Log.d( TAG,"Abandon this sampling, it is already sampling" );
+    public void startSample(String msgId, boolean needListener) {
+        if (!mShouldSample.get()) {
+            Log.d(TAG, "Abandon this sampling, it is already sampling");
             return;
         }
-        mShouldSample.set( false );
-        doSample(msgId,needListener);
-        mShouldSample.set( true );
+        mShouldSample.set(false);
+        doSample(msgId, needListener);
+        mShouldSample.set(true);
     }
 
-    public interface SampleListener{
-        void onSampleEnd(String msgId,String msg);
+    public interface SampleListener {
+        void onSampleEnd(String msgId, String msg);
     }
 }

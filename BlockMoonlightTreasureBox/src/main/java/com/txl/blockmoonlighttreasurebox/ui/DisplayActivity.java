@@ -2,7 +2,6 @@ package com.txl.blockmoonlighttreasurebox.ui;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.txl.blockmoonlighttreasurebox.R;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DisplayActivity extends Activity {
     private final AtomicBoolean refresh = new AtomicBoolean(false);
     private final FileAdapter adapter = new FileAdapter();
-    SwipeRefreshLayout swipeRefreshLayout;
+    Button btnRefresh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +36,8 @@ public class DisplayActivity extends Activity {
     }
 
     private void initView() {
-        swipeRefreshLayout = findViewById(R.id.swipeRefresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshAnrData();
-            }
-        });
+        btnRefresh = findViewById(R.id.btn_refresh);
+        btnRefresh.setOnClickListener(v -> refreshAnrData());
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
         refreshAnrData();
@@ -68,7 +63,6 @@ public class DisplayActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
                         adapter.notifyDataSetChanged();
                     }
                 });
